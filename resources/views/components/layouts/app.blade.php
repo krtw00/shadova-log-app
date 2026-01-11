@@ -1,5 +1,14 @@
+@php
+    $theme = 'dark';
+    if (Auth::check()) {
+        $userSetting = Auth::user()->setting;
+        if ($userSetting) {
+            $theme = $userSetting->theme ?? 'dark';
+        }
+    }
+@endphp
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="{{ $theme }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -19,26 +28,28 @@
         .scrollbar-thin::-webkit-scrollbar { width: 6px; }
         .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
         .scrollbar-thin::-webkit-scrollbar-thumb { background: #374151; border-radius: 3px; }
-        .glass-card {
+        .dark .glass-card {
             background: rgba(31, 41, 55, 0.8);
             backdrop-filter: blur(12px);
             border: 1px solid rgba(128, 128, 128, 0.2);
         }
+        .light .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(200, 200, 200, 0.5);
+        }
     </style>
 </head>
-<body class="h-screen overflow-hidden bg-gray-900 text-gray-100"
-      x-data="{
-          sidebarExpanded: false,
-          showSettings: false
-      }">
+<body class="h-screen overflow-hidden transition-colors duration-200 dark:bg-gray-900 dark:text-gray-100 bg-gray-100 text-gray-900"
+      x-data="{ sidebarExpanded: false }">
     <div class="flex h-screen">
         <!-- Left Collapsible Sidebar -->
         <aside
-            class="flex-shrink-0 flex flex-col bg-gray-800 border-r border-gray-700 transition-all duration-300"
+            class="flex-shrink-0 flex flex-col dark:bg-gray-800 bg-white border-r dark:border-gray-700 border-gray-200 transition-all duration-300"
             :class="sidebarExpanded ? 'w-52' : 'w-16'"
         >
             <!-- Logo & Toggle -->
-            <div class="flex h-14 items-center border-b border-gray-700 px-3" :class="sidebarExpanded ? 'justify-between' : 'justify-center'">
+            <div class="flex h-14 items-center dark:border-gray-700 border-gray-200 border-b px-3" :class="sidebarExpanded ? 'justify-between' : 'justify-center'">
                 <a href="/" class="flex items-center gap-2 overflow-hidden">
                     <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-purple-600">
                         <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -53,7 +64,7 @@
             <nav class="flex-1 mt-4 px-2 space-y-1">
                 <!-- 対戦記録 -->
                 <a href="{{ route('battles.index') }}"
-                    class="w-full flex items-center gap-3 rounded-lg px-3 py-3 transition-colors {{ request()->routeIs('battles.*') ? 'bg-purple-600/20 text-purple-400' : 'text-gray-400 hover:bg-gray-700 hover:text-white' }}"
+                    class="w-full flex items-center gap-3 rounded-lg px-3 py-3 transition-colors {{ request()->routeIs('battles.*') ? 'bg-purple-600/20 text-purple-400' : 'dark:text-gray-400 text-gray-600 dark:hover:bg-gray-700 hover:bg-gray-200 dark:hover:text-white hover:text-gray-900' }}"
                     :class="sidebarExpanded ? 'justify-start' : 'justify-center'"
                 >
                     <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -65,7 +76,7 @@
 
                 <!-- 統計・分析 -->
                 <a href="{{ route('statistics.index') }}"
-                    class="w-full flex items-center gap-3 rounded-lg px-3 py-3 transition-colors {{ request()->routeIs('statistics.*') ? 'bg-purple-600/20 text-purple-400' : 'text-gray-400 hover:bg-gray-700 hover:text-white' }}"
+                    class="w-full flex items-center gap-3 rounded-lg px-3 py-3 transition-colors {{ request()->routeIs('statistics.*') ? 'bg-purple-600/20 text-purple-400' : 'dark:text-gray-400 text-gray-600 dark:hover:bg-gray-700 hover:bg-gray-200 dark:hover:text-white hover:text-gray-900' }}"
                     :class="sidebarExpanded ? 'justify-start' : 'justify-center'"
                 >
                     <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -78,11 +89,10 @@
             </nav>
 
             <!-- Bottom Section -->
-            <div class="border-t border-gray-700 p-2 space-y-1">
+            <div class="border-t dark:border-gray-700 border-gray-200 p-2 space-y-1">
                 <!-- 設定 -->
-                <button
-                    @click="showSettings = !showSettings"
-                    class="w-full flex items-center gap-3 rounded-lg px-3 py-2 text-gray-400 hover:bg-gray-700 hover:text-white transition-colors"
+                <a href="{{ route('settings.index') }}"
+                    class="w-full flex items-center gap-3 rounded-lg px-3 py-2 transition-colors {{ request()->routeIs('settings.*') ? 'bg-purple-600/20 text-purple-400' : 'dark:text-gray-400 text-gray-600 dark:hover:bg-gray-700 hover:bg-gray-200 dark:hover:text-white hover:text-gray-900' }}"
                     :class="sidebarExpanded ? 'justify-start' : 'justify-center'"
                 >
                     <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -90,12 +100,12 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                     </svg>
                     <span x-show="sidebarExpanded" x-transition class="whitespace-nowrap text-sm">設定</span>
-                </button>
+                </a>
 
                 <!-- 折りたたみトグル -->
                 <button
                     @click="sidebarExpanded = !sidebarExpanded"
-                    class="w-full flex items-center gap-3 rounded-lg px-3 py-2 text-gray-400 hover:bg-gray-700 hover:text-white transition-colors"
+                    class="w-full flex items-center gap-3 rounded-lg px-3 py-2 dark:text-gray-400 text-gray-600 dark:hover:bg-gray-700 hover:bg-gray-200 dark:hover:text-white hover:text-gray-900 transition-colors"
                     :class="sidebarExpanded ? 'justify-start' : 'justify-center'"
                 >
                     <svg
@@ -114,7 +124,7 @@
                     @csrf
                     <button
                         type="submit"
-                        class="w-full flex items-center gap-3 rounded-lg px-3 py-2 text-gray-400 hover:bg-gray-700 hover:text-white transition-colors"
+                        class="w-full flex items-center gap-3 rounded-lg px-3 py-2 dark:text-gray-400 text-gray-600 dark:hover:bg-gray-700 hover:bg-gray-200 dark:hover:text-white hover:text-gray-900 transition-colors"
                         :class="sidebarExpanded ? 'justify-start' : 'justify-center'"
                     >
                         <svg class="h-5 w-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -134,7 +144,7 @@
                     <div class="h-8 w-8 shrink-0 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
                         <span class="text-xs text-white font-medium">{{ mb_substr(Auth::user()->name, 0, 1) }}</span>
                     </div>
-                    <span x-show="sidebarExpanded" x-transition class="whitespace-nowrap text-sm text-gray-300">{{ Auth::user()->name }}</span>
+                    <span x-show="sidebarExpanded" x-transition class="whitespace-nowrap text-sm dark:text-gray-300 text-gray-700">{{ Auth::user()->name }}</span>
                 </div>
                 @endauth
             </div>

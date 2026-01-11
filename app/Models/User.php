@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Notifications\ResetPasswordNotification;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -52,5 +53,18 @@ class User extends Authenticatable
     public function shareLinks(): HasMany
     {
         return $this->hasMany(ShareLink::class);
+    }
+
+    public function setting(): HasOne
+    {
+        return $this->hasOne(UserSetting::class);
+    }
+
+    public function getOrCreateSetting(): UserSetting
+    {
+        return $this->setting ?? $this->setting()->create([
+            'theme' => 'dark',
+            'per_page' => 20,
+        ]);
     }
 }

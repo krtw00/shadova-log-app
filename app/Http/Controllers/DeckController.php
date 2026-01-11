@@ -65,7 +65,7 @@ class DeckController extends Controller
 
         $deck->update($validated);
 
-        return redirect()->back()->with('success', 'デッキを更新しました');
+        return redirect()->route('battles.index')->with('success', 'デッキを更新しました');
     }
 
     public function destroy(Deck $deck)

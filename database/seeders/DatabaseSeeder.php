@@ -13,12 +13,19 @@ class DatabaseSeeder extends Seeder
         $this->call([
             LeaderClassSeeder::class,
             GameModeSeeder::class,
+            RankSeeder::class,
+            GroupSeeder::class,
         ]);
 
-        // テストユーザーを作成
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        // 開発環境の場合はダミーデータも投入
+        if (app()->environment('local', 'development')) {
+            $this->call(DummyDataSeeder::class);
+        } else {
+            // 本番環境ではテストユーザーのみ作成
+            User::factory()->create([
+                'name' => 'Test User',
+                'email' => 'test@example.com',
+            ]);
+        }
     }
 }

@@ -23,14 +23,16 @@ class BattleController extends Controller
     public function index(Request $request)
     {
         $user = $this->getUser();
+        $setting = $user->getOrCreateSetting();
         $gameModeCode = $request->get('mode', 'RANK');
         $gameMode = GameMode::where('code', $gameModeCode)->first();
+        $perPage = $request->get('per_page', $setting->per_page);
 
         $battles = Battle::with(['deck.leaderClass', 'myClass', 'opponentClass', 'gameMode', 'rank', 'group'])
             ->where('user_id', $user->id)
             ->when($gameMode, fn($q) => $q->where('game_mode_id', $gameMode->id))
             ->orderBy('played_at', 'desc')
-            ->paginate(20);
+            ->paginate($perPage);
 
         $decks = $user->decks()->withCount(['battles', 'battles as wins_count' => function($q) {
             $q->where('result', true);
@@ -42,6 +44,13 @@ class BattleController extends Controller
 
         // 共有リンク
         $shareLinks = $user->shareLinks()->orderBy('created_at', 'desc')->get();
+
+        // 前回の対戦記録（ランク/グループ引き継ぎ用）
+        $lastBattle = Battle::with('rank')
+            ->where('user_id', $user->id)
+            ->whereNotNull('rank_id')
+            ->orderBy('played_at', 'desc')
+            ->first();
 
         // 統計情報
         $stats = $this->getStats($user, $gameMode);
@@ -55,7 +64,9 @@ class BattleController extends Controller
             'stats',
             'shareLinks',
             'ranks',
-            'groups'
+            'groups',
+            'perPage',
+            'lastBattle'
         ));
     }
 

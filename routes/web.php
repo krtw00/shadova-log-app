@@ -4,7 +4,9 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BattleController;
 use App\Http\Controllers\DeckController;
 use App\Http\Controllers\PublicProfileController;
+use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\ShareController;
+use App\Http\Controllers\StatisticsController;
 use Illuminate\Support\Facades\Route;
 
 // 認証ルート（ゲスト用）
@@ -41,14 +43,15 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/decks', function () {
         return redirect()->route('battles.index');
     })->name('decks.index');
+    Route::get('/decks/{deck}', function () {
+        return redirect()->route('battles.index');
+    });
     Route::post('/decks', [DeckController::class, 'store'])->name('decks.store');
     Route::put('/decks/{deck}', [DeckController::class, 'update'])->name('decks.update');
     Route::delete('/decks/{deck}', [DeckController::class, 'destroy'])->name('decks.destroy');
 
     // 統計・分析
-    Route::get('/statistics', function () {
-        return view('statistics.index');
-    })->name('statistics.index');
+    Route::get('/statistics', [StatisticsController::class, 'index'])->name('statistics.index');
 
     // 共有リンク管理
     Route::post('/shares', [ShareController::class, 'store'])->name('shares.store');
@@ -56,6 +59,16 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/shares/{shareLink}', [ShareController::class, 'destroy'])->name('shares.destroy');
     Route::post('/shares/{shareLink}/toggle', [ShareController::class, 'toggle'])->name('shares.toggle');
     Route::post('/profile/username', [ShareController::class, 'updateUsername'])->name('profile.username.update');
+
+    // 設定
+    Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
+    Route::put('/settings/profile', [SettingsController::class, 'updateProfile'])->name('settings.profile');
+    Route::put('/settings/password', [SettingsController::class, 'updatePassword'])->name('settings.password');
+    Route::put('/settings/preferences', [SettingsController::class, 'updatePreferences'])->name('settings.preferences');
+    Route::put('/settings/per-page', [SettingsController::class, 'updatePerPage'])->name('settings.per-page');
+    Route::get('/settings/export', [SettingsController::class, 'exportData'])->name('settings.export');
+    Route::delete('/settings/data', [SettingsController::class, 'deleteAllData'])->name('settings.data.delete');
+    Route::delete('/settings/account', [SettingsController::class, 'deleteAccount'])->name('settings.account.delete');
 });
 
 // 公開プロフィール（認証不要）
