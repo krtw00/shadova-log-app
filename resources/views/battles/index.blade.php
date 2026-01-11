@@ -35,9 +35,9 @@
              showEditDeckModal: false,
              showCreateShareModal: false,
              showUsernameModal: false,
-             editDeck: null,
+             editDeck: { id: null, name: '', leader_class_id: null },
              showEditBattleModal: false,
-             editBattle: null,
+             editBattle: { id: null, notes: '', deck_id: null, opponent_class_id: null, result: null, is_first: null, game_mode_id: null, rank_id: null, group_id: null },
              rightPanel: 'stats',
              classColors: {
                  1: { bg: 'bg-green-600/20', text: 'text-green-400', label: 'E' },
@@ -712,7 +712,7 @@
                             <input
                                 type="text"
                                 name="name"
-                                x-model="editDeck?.name"
+                                x-model="editDeck.name"
                                 required
                                 class="w-full rounded-lg dark:bg-gray-700 bg-gray-100 dark:border-gray-600 border-gray-300 dark:text-white text-gray-900 px-4 py-2.5 focus:border-purple-500 focus:ring-purple-500"
                             >
@@ -1038,7 +1038,7 @@
                                 rows="2"
                                 class="w-full rounded-lg dark:bg-gray-700 bg-gray-100 dark:border-gray-600 border-gray-300 dark:text-white text-gray-900 px-4 py-2.5 focus:border-purple-500 focus:ring-purple-500"
                                 placeholder="メモを残す（任意）"
-                                x-model="editBattle ? editBattle.notes : ''"
+                                x-model="editBattle.notes"
                             ></textarea>
                         </div>
                     </div>

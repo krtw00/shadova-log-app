@@ -6,7 +6,7 @@
          x-data="{
              showCreateModal: false,
              showEditModal: false,
-             editDeck: null,
+             editDeck: { id: null, name: '', leader_class_id: null },
              newDeckName: '',
              newDeckClass: '',
              classColors: {
@@ -298,7 +298,7 @@
                             <input
                                 type="text"
                                 name="name"
-                                x-model="editDeck?.name"
+                                x-model="editDeck.name"
                                 required
                                 class="w-full rounded-lg bg-gray-700 border-gray-600 text-white px-4 py-2.5 focus:border-purple-500 focus:ring-purple-500"
                             >
