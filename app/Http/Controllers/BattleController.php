@@ -30,9 +30,14 @@ class BattleController extends Controller
             ->orderBy('played_at', 'desc')
             ->paginate(20);
 
-        $decks = $user->activeDecks()->with('leaderClass')->get();
+        $decks = $user->decks()->withCount(['battles', 'battles as wins_count' => function($q) {
+            $q->where('result', true);
+        }])->with('leaderClass')->get();
         $leaderClasses = LeaderClass::all();
         $gameModes = GameMode::all();
+
+        // 共有リンク
+        $shareLinks = $user->shareLinks()->orderBy('created_at', 'desc')->get();
 
         // 統計情報
         $stats = $this->getStats($user, $gameMode);
@@ -43,7 +48,8 @@ class BattleController extends Controller
             'leaderClasses',
             'gameModes',
             'gameMode',
-            'stats'
+            'stats',
+            'shareLinks'
         ));
     }
 
@@ -84,7 +90,11 @@ class BattleController extends Controller
 
     public function update(Request $request, Battle $battle)
     {
-        $this->authorize('update', $battle);
+        $user = $this->getUser();
+
+        if ($battle->user_id !== $user->id) {
+            abort(403);
+        }
 
         $validated = $request->validate([
             'deck_id' => 'sometimes|exists:decks,id',
@@ -101,7 +111,11 @@ class BattleController extends Controller
 
     public function destroy(Battle $battle)
     {
-        $this->authorize('delete', $battle);
+        $user = $this->getUser();
+
+        if ($battle->user_id !== $user->id) {
+            abort(403);
+        }
 
         $battle->delete();
 

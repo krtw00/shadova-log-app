@@ -217,7 +217,7 @@
         >
             <div
                 @click.away="showCreateModal = false"
-                class="w-full max-w-md rounded-2xl bg-gray-800 border border-gray-700 p-6 shadow-xl mx-4"
+                class="w-full max-w-lg rounded-2xl bg-gray-800 border border-gray-700 p-6 shadow-xl mx-4"
                 x-transition:enter="transition ease-out duration-200"
                 x-transition:enter-start="opacity-0 scale-95"
                 x-transition:enter-end="opacity-100 scale-100"
@@ -283,7 +283,7 @@
         >
             <div
                 @click.away="showEditModal = false; editDeck = null"
-                class="w-full max-w-md rounded-2xl bg-gray-800 border border-gray-700 p-6 shadow-xl mx-4"
+                class="w-full max-w-lg rounded-2xl bg-gray-800 border border-gray-700 p-6 shadow-xl mx-4"
                 x-transition:enter="transition ease-out duration-200"
                 x-transition:enter-start="opacity-0 scale-95"
                 x-transition:enter-end="opacity-100 scale-100"

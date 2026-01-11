@@ -3,6 +3,8 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BattleController;
 use App\Http\Controllers\DeckController;
+use App\Http\Controllers\PublicProfileController;
+use App\Http\Controllers\ShareController;
 use Illuminate\Support\Facades\Route;
 
 // 認証ルート（ゲスト用）
@@ -27,29 +29,37 @@ Route::get('/', function () {
     return redirect()->route('battles.index');
 });
 
-// 認証が必要なルート（開発中は認証なしで動作）
-// TODO: 本番環境では auth ミドルウェアを追加
-// Route::middleware(['auth'])->group(function () {
-
+// 認証が必要なルート
+Route::middleware(['auth'])->group(function () {
     // 対戦記録
     Route::get('/battles', [BattleController::class, 'index'])->name('battles.index');
     Route::post('/battles', [BattleController::class, 'store'])->name('battles.store');
     Route::put('/battles/{battle}', [BattleController::class, 'update'])->name('battles.update');
     Route::delete('/battles/{battle}', [BattleController::class, 'destroy'])->name('battles.destroy');
 
-    // デッキ管理
-    Route::get('/decks', [DeckController::class, 'index'])->name('decks.index');
+    // デッキ管理（対戦記録画面に統合、APIルートのみ残す）
+    Route::get('/decks', function () {
+        return redirect()->route('battles.index');
+    })->name('decks.index');
     Route::post('/decks', [DeckController::class, 'store'])->name('decks.store');
     Route::put('/decks/{deck}', [DeckController::class, 'update'])->name('decks.update');
     Route::delete('/decks/{deck}', [DeckController::class, 'destroy'])->name('decks.destroy');
-    Route::post('/decks/{deck}/toggle-active', [DeckController::class, 'toggleActive'])->name('decks.toggle-active');
 
     // 統計・分析
     Route::get('/statistics', function () {
         return view('statistics.index');
     })->name('statistics.index');
 
-// });
+    // 共有リンク管理
+    Route::post('/shares', [ShareController::class, 'store'])->name('shares.store');
+    Route::put('/shares/{shareLink}', [ShareController::class, 'update'])->name('shares.update');
+    Route::delete('/shares/{shareLink}', [ShareController::class, 'destroy'])->name('shares.destroy');
+    Route::post('/shares/{shareLink}/toggle', [ShareController::class, 'toggle'])->name('shares.toggle');
+    Route::post('/profile/username', [ShareController::class, 'updateUsername'])->name('profile.username.update');
+});
+
+// 公開プロフィール（認証不要）
+Route::get('/u/{username}/{slug}', [PublicProfileController::class, 'show'])->name('profile.share');
 
 // UIモック（開発用）
 Route::get('/ui-mocks', function () {

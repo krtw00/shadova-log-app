@@ -19,6 +19,7 @@ class User extends Authenticatable
 
     protected $fillable = [
         'name',
+        'username',
         'email',
         'password',
         'supabase_id',
@@ -48,8 +49,8 @@ class User extends Authenticatable
         return $this->hasMany(Battle::class);
     }
 
-    public function activeDecks(): HasMany
+    public function shareLinks(): HasMany
     {
-        return $this->hasMany(Deck::class)->where('active', true);
+        return $this->hasMany(ShareLink::class);
     }
 }
