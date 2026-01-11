@@ -7,6 +7,7 @@ use App\Http\Controllers\PublicProfileController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\ShareController;
 use App\Http\Controllers\StatisticsController;
+use App\Http\Controllers\StreamerController;
 use Illuminate\Support\Facades\Route;
 
 // 認証ルート（ゲスト用）
@@ -66,9 +67,19 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/settings/password', [SettingsController::class, 'updatePassword'])->name('settings.password');
     Route::put('/settings/preferences', [SettingsController::class, 'updatePreferences'])->name('settings.preferences');
     Route::put('/settings/per-page', [SettingsController::class, 'updatePerPage'])->name('settings.per-page');
+    Route::put('/settings/streamer', [SettingsController::class, 'updateStreamerMode'])->name('settings.streamer');
     Route::get('/settings/export', [SettingsController::class, 'exportData'])->name('settings.export');
     Route::delete('/settings/data', [SettingsController::class, 'deleteAllData'])->name('settings.data.delete');
     Route::delete('/settings/account', [SettingsController::class, 'deleteAccount'])->name('settings.account.delete');
+
+    // 配信者モード
+    Route::get('/streamer', [StreamerController::class, 'index'])->name('streamer.index');
+    Route::get('/streamer/overlay', [StreamerController::class, 'overlay'])->name('streamer.overlay');
+    Route::get('/streamer/overlay/data', [StreamerController::class, 'overlayData'])->name('streamer.overlay.data');
+    Route::post('/streamer/session/start', [StreamerController::class, 'startSession'])->name('streamer.session.start');
+    Route::post('/streamer/session/end', [StreamerController::class, 'endSession'])->name('streamer.session.end');
+    Route::post('/streamer/streak/reset', [StreamerController::class, 'resetStreak'])->name('streamer.streak.reset');
+    Route::put('/streamer/overlay/settings', [StreamerController::class, 'updateOverlaySettings'])->name('streamer.overlay.settings');
 });
 
 // 公開プロフィール（認証不要）

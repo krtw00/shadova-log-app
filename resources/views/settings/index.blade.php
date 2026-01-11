@@ -153,6 +153,53 @@
                     </form>
                 </section>
 
+                <!-- Streamer Mode Section -->
+                <section class="glass-card rounded-xl p-6">
+                    <h2 class="text-lg font-semibold dark:text-white text-gray-900 mb-4 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                        </svg>
+                        配信者モード
+                    </h2>
+
+                    <p class="text-sm dark:text-gray-400 text-gray-600 mb-4">
+                        配信者モードを有効にすると、OBS等で使用できるオーバーレイ表示や連勝カウンターなどの配信向け機能が利用できます。
+                    </p>
+
+                    <form action="{{ route('settings.streamer') }}" method="POST">
+                        @csrf
+                        @method('PUT')
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <span class="dark:text-white text-gray-900 font-medium">配信者モード</span>
+                                <p class="text-xs dark:text-gray-500 text-gray-500">有効にすると配信者ダッシュボードにアクセスできます</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="hidden" name="streamer_mode_enabled" value="0">
+                                <input type="checkbox" name="streamer_mode_enabled" value="1"
+                                       {{ $setting->streamer_mode_enabled ? 'checked' : '' }}
+                                       class="sr-only peer">
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 dark:peer-focus:ring-purple-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-purple-600"></div>
+                            </label>
+                        </div>
+                        <button type="submit" class="w-full px-4 py-2 rounded-lg bg-purple-600 hover:bg-purple-500 text-white font-medium transition-colors">
+                            設定を保存
+                        </button>
+                    </form>
+
+                    @if($setting->streamer_mode_enabled)
+                    <div class="mt-4 pt-4 border-t dark:border-gray-700 border-gray-200">
+                        <a href="{{ route('streamer.index') }}"
+                           class="flex items-center justify-center gap-2 w-full px-4 py-2 rounded-lg dark:bg-gray-700 bg-gray-200 dark:hover:bg-gray-600 hover:bg-gray-300 dark:text-white text-gray-900 font-medium transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                            </svg>
+                            配信者ダッシュボードを開く
+                        </a>
+                    </div>
+                    @endif
+                </section>
+
                 <!-- Data Management Section -->
                 <section class="glass-card rounded-xl p-6">
                     <h2 class="text-lg font-semibold dark:text-white text-gray-900 mb-4 flex items-center gap-2">

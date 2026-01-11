@@ -86,6 +86,19 @@
                     </svg>
                     <span x-show="sidebarExpanded" x-transition class="whitespace-nowrap text-sm font-medium">統計・分析</span>
                 </a>
+
+                <!-- 配信者モード（有効時のみ表示） -->
+                @if(Auth::check() && Auth::user()->setting?->streamer_mode_enabled)
+                <a href="{{ route('streamer.index') }}"
+                    class="w-full flex items-center gap-3 rounded-lg px-3 py-3 transition-colors {{ request()->routeIs('streamer.*') ? 'bg-purple-600/20 text-purple-400' : 'dark:text-gray-400 text-gray-600 dark:hover:bg-gray-700 hover:bg-gray-200 dark:hover:text-white hover:text-gray-900' }}"
+                    :class="sidebarExpanded ? 'justify-start' : 'justify-center'"
+                >
+                    <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                    </svg>
+                    <span x-show="sidebarExpanded" x-transition class="whitespace-nowrap text-sm font-medium">配信者モード</span>
+                </a>
+                @endif
             </nav>
 
             <!-- Bottom Section -->

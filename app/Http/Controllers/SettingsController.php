@@ -84,6 +84,24 @@ class SettingsController extends Controller
         return redirect()->back()->with('success', '表示件数を更新しました');
     }
 
+    public function updateStreamerMode(Request $request)
+    {
+        $user = $this->getUser();
+        $setting = $user->getOrCreateSetting();
+
+        $validated = $request->validate([
+            'streamer_mode_enabled' => ['required', 'boolean'],
+        ]);
+
+        $setting->update($validated);
+
+        $message = $validated['streamer_mode_enabled']
+            ? '配信者モードを有効にしました'
+            : '配信者モードを無効にしました';
+
+        return redirect()->route('settings.index')->with('success', $message);
+    }
+
     public function exportData(Request $request)
     {
         $user = $this->getUser();
