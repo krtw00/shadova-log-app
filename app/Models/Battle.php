@@ -13,8 +13,11 @@ class Battle extends Model
     protected $fillable = [
         'user_id',
         'deck_id',
+        'my_class_id',
         'opponent_class_id',
         'game_mode_id',
+        'rank_id',
+        'group_id',
         'result',
         'is_first',
         'played_at',
@@ -37,6 +40,11 @@ class Battle extends Model
         return $this->belongsTo(Deck::class);
     }
 
+    public function myClass(): BelongsTo
+    {
+        return $this->belongsTo(LeaderClass::class, 'my_class_id');
+    }
+
     public function opponentClass(): BelongsTo
     {
         return $this->belongsTo(LeaderClass::class, 'opponent_class_id');
@@ -45,6 +53,16 @@ class Battle extends Model
     public function gameMode(): BelongsTo
     {
         return $this->belongsTo(GameMode::class, 'game_mode_id');
+    }
+
+    public function rank(): BelongsTo
+    {
+        return $this->belongsTo(Rank::class);
+    }
+
+    public function group(): BelongsTo
+    {
+        return $this->belongsTo(Group::class);
     }
 
     public function scopeWins($query)

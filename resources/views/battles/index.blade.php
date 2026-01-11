@@ -8,6 +8,27 @@
              selectedOpponent: null,
              selectedTurn: 'first',
              selectedDeck: {{ $decks->first()?->id ?? 'null' }},
+             selectedMyClass: null,
+             selectedRank: null,
+             selectedTier: '',
+             selectedLevel: '0',
+             selectedGroup: '',
+             is2Pick: {{ $gameMode && $gameMode->code === '2PICK' ? 'true' : 'false' }},
+             isRankMatch: {{ $gameMode && $gameMode->code === 'RANK' ? 'true' : 'false' }},
+             hasRank: {{ $gameMode && in_array($gameMode->code, ['RANK', '2PICK']) ? 'true' : 'false' }},
+             rankMap: {
+                 @foreach($ranks as $rank)
+                 '{{ $rank->tier }}_{{ $rank->level }}': {{ $rank->id }},
+                 @endforeach
+             },
+             getRankId() {
+                 if (!this.selectedTier) return null;
+                 if (this.selectedTier === 'Master' || this.selectedTier === 'GrandMaster') {
+                     return this.rankMap[this.selectedTier + '_0'] || null;
+                 }
+                 // Beginner, D, C, B, A, AA はレベル選択あり
+                 return this.rankMap[this.selectedTier + '_' + this.selectedLevel] || null;
+             },
              defaultTurn: 'first',
              resultFilter: 'all',
              showCreateDeckModal: false,
@@ -43,14 +64,22 @@
                             <span class="text-purple-400 font-medium">{{ $stats['today']['winRate'] }}%</span>
                         </div>
                     </div>
-                    @if($decks->isNotEmpty())
-                    <!-- 使用中デッキ表示 -->
-                    <select x-model="selectedDeck" class="rounded-lg bg-purple-600/20 border border-purple-500/30 text-sm text-purple-300 px-3 py-1.5">
-                        @foreach($decks as $deck)
-                        <option value="{{ $deck->id }}">{{ $deck->name }}</option>
-                        @endforeach
-                    </select>
-                    @endif
+                    <!-- 2pick: クラス選択 / その他: デッキ選択 -->
+                    <template x-if="is2Pick">
+                        <select x-model="selectedMyClass" class="rounded-lg bg-gray-900 border border-purple-500/50 text-sm text-white px-3 py-1.5">
+                            <option value="">クラス選択</option>
+                            @foreach($leaderClasses as $class)
+                            <option value="{{ $class->id }}">{{ $class->name }}</option>
+                            @endforeach
+                        </select>
+                    </template>
+                    <template x-if="!is2Pick && {{ $decks->isNotEmpty() ? 'true' : 'false' }}">
+                        <select x-model="selectedDeck" class="rounded-lg bg-gray-900 border border-purple-500/50 text-sm text-white px-3 py-1.5">
+                            @foreach($decks as $deck)
+                            <option value="{{ $deck->id }}">{{ $deck->name }}</option>
+                            @endforeach
+                        </select>
+                    </template>
                 </div>
                 <!-- Game Mode Tabs -->
                 <div class="flex items-center gap-1 px-4 pb-2">
@@ -66,15 +95,18 @@
             <!-- Scrollable Content -->
             <main class="flex-1 overflow-y-auto scrollbar-thin">
                 <!-- インライン対戦入力セクション -->
-                @if($decks->isNotEmpty())
+                @if($decks->isNotEmpty() || ($gameMode && $gameMode->code === '2PICK'))
                 <div class="p-4 border-b border-gray-700 bg-gray-800/30">
                     <form action="{{ route('battles.store') }}" method="POST" class="glass-card rounded-xl p-4">
                         @csrf
                         <input type="hidden" name="game_mode_id" value="{{ $gameMode?->id ?? 1 }}">
-                        <input type="hidden" name="deck_id" x-bind:value="selectedDeck">
+                        <input type="hidden" name="deck_id" x-bind:value="is2Pick ? '' : selectedDeck">
+                        <input type="hidden" name="my_class_id" x-bind:value="is2Pick ? selectedMyClass : ''">
                         <input type="hidden" name="result" x-bind:value="selectedResult === 'win' ? 1 : 0">
                         <input type="hidden" name="is_first" x-bind:value="selectedTurn === 'first' ? 1 : 0">
                         <input type="hidden" name="opponent_class_id" x-bind:value="selectedOpponent">
+                        <input type="hidden" name="rank_id" x-bind:value="hasRank ? getRankId() : ''">
+                        <input type="hidden" name="group_id" x-bind:value="isRankMatch ? (selectedGroup || '') : ''">
 
                         <div class="flex items-center justify-between mb-3">
                             <h2 class="text-sm font-medium text-gray-400 flex items-center gap-2">
@@ -159,13 +191,55 @@
                                 </button>
                             </div>
 
+                            <!-- ランク選択（ランクマッチ・2pickのみ） -->
+                            <template x-if="hasRank">
+                                <div class="flex items-center gap-3">
+                                    <div class="h-10 w-px bg-gray-600"></div>
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-sm text-gray-400">ランク</span>
+                                        <select x-model="selectedTier"
+                                            class="rounded-lg bg-gray-900 border border-gray-600 text-sm text-white px-2 py-1.5 focus:border-purple-500 focus:ring-purple-500">
+                                            <option value="">未選択</option>
+                                            <option value="Beginner">ビギナー</option>
+                                            <option value="D">D</option>
+                                            <option value="C">C</option>
+                                            <option value="B">B</option>
+                                            <option value="A">A</option>
+                                            <option value="AA">AA</option>
+                                            <option value="Master">マスター</option>
+                                            <option value="GrandMaster">グラマス</option>
+                                        </select>
+                                        <select x-model="selectedLevel"
+                                            x-show="selectedTier && selectedTier !== 'Master' && selectedTier !== 'GrandMaster'"
+                                            class="rounded-lg bg-gray-900 border border-gray-600 text-sm text-white px-2 py-1.5 focus:border-purple-500 focus:ring-purple-500">
+                                            <option value="0">0</option>
+                                            <option value="1">1</option>
+                                            <option value="2">2</option>
+                                            <option value="3">3</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </template>
+
+                            <!-- グループ選択（ランクマッチのみ） -->
+                            <div x-show="isRankMatch" class="flex items-center gap-2">
+                                <span class="text-sm text-gray-400">グループ</span>
+                                <select x-model="selectedGroup"
+                                    class="rounded-lg bg-gray-900 border border-gray-600 text-sm text-white px-2 py-1.5 focus:border-purple-500 focus:ring-purple-500">
+                                    <option value="">未選択</option>
+                                    @foreach($groups as $group)
+                                    <option value="{{ $group->id }}">{{ $group->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
                             <!-- 記録ボタン -->
                             <button type="submit"
                                 class="ml-auto flex items-center gap-2 px-5 py-2.5 rounded-xl font-medium transition-all"
-                                :class="selectedResult && selectedOpponent
+                                :class="selectedResult && selectedOpponent && (is2Pick ? selectedMyClass : selectedDeck)
                                     ? 'bg-purple-600 text-white hover:bg-purple-500'
                                     : 'bg-gray-700 text-gray-500 cursor-not-allowed'"
-                                :disabled="!selectedResult || !selectedOpponent">
+                                :disabled="!selectedResult || !selectedOpponent || (is2Pick ? !selectedMyClass : !selectedDeck)">
                                 <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                                 </svg>
@@ -229,7 +303,15 @@
                                 </div>
                                 <div class="flex-1 min-w-0">
                                     <div class="flex items-center gap-2 flex-wrap">
-                                        <span class="font-semibold text-white">{{ $battle->deck->name }}</span>
+                                        <span class="font-semibold text-white">
+                                            @if($battle->deck)
+                                                {{ $battle->deck->name }}
+                                            @elseif($battle->myClass)
+                                                {{ $battle->myClass->name }}
+                                            @else
+                                                -
+                                            @endif
+                                        </span>
                                         <svg class="h-4 w-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
                                         </svg>
@@ -241,6 +323,12 @@
                                             {{ $battle->is_first ? '先攻' : '後攻' }}
                                         </span>
                                         <span class="px-1.5 py-0.5 rounded bg-purple-600/30 text-purple-400 text-xs">{{ $battle->gameMode->name }}</span>
+                                        @if($battle->rank)
+                                        <span class="px-1.5 py-0.5 rounded bg-yellow-600/30 text-yellow-400 text-xs">{{ $battle->rank->name }}</span>
+                                        @endif
+                                        @if($battle->group)
+                                        <span class="px-1.5 py-0.5 rounded bg-cyan-600/30 text-cyan-400 text-xs">{{ $battle->group->name }}</span>
+                                        @endif
                                         <span>{{ $battle->played_at->diffForHumans() }}</span>
                                     </div>
                                 </div>

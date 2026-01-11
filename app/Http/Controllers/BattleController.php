@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Battle;
 use App\Models\Deck;
 use App\Models\GameMode;
+use App\Models\Group;
 use App\Models\LeaderClass;
+use App\Models\Rank;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
@@ -24,7 +26,7 @@ class BattleController extends Controller
         $gameModeCode = $request->get('mode', 'RANK');
         $gameMode = GameMode::where('code', $gameModeCode)->first();
 
-        $battles = Battle::with(['deck.leaderClass', 'opponentClass', 'gameMode'])
+        $battles = Battle::with(['deck.leaderClass', 'myClass', 'opponentClass', 'gameMode', 'rank', 'group'])
             ->where('user_id', $user->id)
             ->when($gameMode, fn($q) => $q->where('game_mode_id', $gameMode->id))
             ->orderBy('played_at', 'desc')
@@ -35,6 +37,8 @@ class BattleController extends Controller
         }])->with('leaderClass')->get();
         $leaderClasses = LeaderClass::all();
         $gameModes = GameMode::all();
+        $ranks = Rank::orderBy('sort_order')->get();
+        $groups = Group::orderBy('sort_order')->get();
 
         // 共有リンク
         $shareLinks = $user->shareLinks()->orderBy('created_at', 'desc')->get();
@@ -49,40 +53,59 @@ class BattleController extends Controller
             'gameModes',
             'gameMode',
             'stats',
-            'shareLinks'
+            'shareLinks',
+            'ranks',
+            'groups'
         ));
     }
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'deck_id' => 'required|exists:decks,id',
+        $gameMode = GameMode::find($request->game_mode_id);
+        $is2Pick = $gameMode && $gameMode->code === '2PICK';
+
+        $rules = [
             'opponent_class_id' => 'required|exists:leader_classes,id',
             'game_mode_id' => 'required|exists:game_modes,id',
+            'rank_id' => 'nullable|exists:ranks,id',
+            'group_id' => 'nullable|exists:groups,id',
             'result' => 'required|boolean',
             'is_first' => 'required|boolean',
             'notes' => 'nullable|string|max:500',
-        ]);
+        ];
+
+        if ($is2Pick) {
+            $rules['my_class_id'] = 'required|exists:leader_classes,id';
+            $rules['deck_id'] = 'nullable';
+        } else {
+            $rules['deck_id'] = 'required|exists:decks,id';
+            $rules['my_class_id'] = 'nullable';
+        }
+
+        $validated = $request->validate($rules);
 
         $user = $this->getUser();
 
-        // デッキが自分のものか確認
-        $deck = Deck::where('id', $validated['deck_id'])
-            ->where('user_id', $user->id)
-            ->firstOrFail();
+        // デッキが指定されている場合は自分のものか確認
+        if (!empty($validated['deck_id'])) {
+            $deck = Deck::where('id', $validated['deck_id'])
+                ->where('user_id', $user->id)
+                ->firstOrFail();
+        }
 
         Battle::create([
             'user_id' => $user->id,
-            'deck_id' => $validated['deck_id'],
+            'deck_id' => $validated['deck_id'] ?? null,
+            'my_class_id' => $validated['my_class_id'] ?? null,
             'opponent_class_id' => $validated['opponent_class_id'],
             'game_mode_id' => $validated['game_mode_id'],
+            'rank_id' => $validated['rank_id'] ?? null,
+            'group_id' => $validated['group_id'] ?? null,
             'result' => $validated['result'],
             'is_first' => $validated['is_first'],
             'played_at' => now(),
             'notes' => $validated['notes'] ?? null,
         ]);
-
-        $gameMode = GameMode::find($validated['game_mode_id']);
 
         return redirect()->route('battles.index', ['mode' => $gameMode->code])
             ->with('success', '対戦を記録しました');
@@ -99,6 +122,8 @@ class BattleController extends Controller
         $validated = $request->validate([
             'deck_id' => 'sometimes|exists:decks,id',
             'opponent_class_id' => 'sometimes|exists:leader_classes,id',
+            'rank_id' => 'nullable|exists:ranks,id',
+            'group_id' => 'nullable|exists:groups,id',
             'result' => 'sometimes|boolean',
             'is_first' => 'sometimes|boolean',
             'notes' => 'nullable|string|max:500',
