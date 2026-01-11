@@ -1,11 +1,7 @@
 services:
   - type: web
     name: shadova-log-app
-    runtime: php
-    # DocumentRootをpublicに設定（Laravel標準）
-    publicPath: /public
-    buildCommand: ./build.sh
-    # startCommandを指定しないとApacheが自動起動
+    runtime: docker
     envVars:
       - key: APP_ENV
         value: production
