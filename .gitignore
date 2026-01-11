@@ -25,3 +25,9 @@ Thumbs.db
 
 # SQLite database
 database/*.sqlite
+
+# MCP settings
+.mcp.json
+
+# Duplicate ui-mocks at root (use public/ui-mocks/)
+/ui-mocks/

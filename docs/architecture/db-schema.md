@@ -1,6 +1,6 @@
 # データベーススキーマ定義
 
-このドキュメントは、Shadova Log Appのデータベーススキーマについて記述します。
+このドキュメントは、Shadova Log App（シャドウバース ワールズビヨンド戦績管理）のデータベーススキーマについて記述します。
 
 ---
 
@@ -66,26 +66,27 @@
 
 ### `leader_classes` テーブル
 
-シャドウバースのクラス（リーダー）マスタデータ。
+シャドウバース ワールズビヨンドのクラス（リーダー）マスタデータ。
 
 | カラム名 | データ型 | 制約 | 説明 |
 |:---|:---|:---|:---|
-| `id` | `tinyint` | **Primary Key** | クラスID |
+| `id` | `smallint` | **Primary Key** | クラスID |
 | `name` | `varchar(20)` | **Not Null** | クラス名（日本語） |
 | `name_en` | `varchar(20)` | **Not Null** | クラス名（英語） |
 
-**初期データ:**
+**初期データ（7クラス）:**
 
 | id | name | name_en |
 |----|------|---------|
-| 1 | エルフ | Forestcraft |
-| 2 | ロイヤル | Swordcraft |
-| 3 | ウィッチ | Runecraft |
-| 4 | ドラゴン | Dragoncraft |
-| 5 | ネクロマンサー | Shadowcraft |
-| 6 | ヴァンパイア | Bloodcraft |
-| 7 | ビショップ | Havencraft |
-| 8 | ネメシス | Portalcraft |
+| 1 | エルフ | Elf |
+| 2 | ロイヤル | Royale |
+| 3 | ウィッチ | Witch |
+| 4 | ドラゴン | Dragon |
+| 5 | ナイトメア | Nightmare |
+| 6 | ビショップ | Bishop |
+| 7 | ネメシス | Nemesis |
+
+※旧シャドバの「ネクロマンサー」と「ヴァンパイア」は「ナイトメア」に統合
 
 ### `game_modes` テーブル
 
@@ -93,20 +94,19 @@
 
 | カラム名 | データ型 | 制約 | 説明 |
 |:---|:---|:---|:---|
-| `id` | `tinyint` | **Primary Key** | モードID |
+| `id` | `smallint` | **Primary Key** | モードID |
 | `code` | `varchar(10)` | **Unique**, **Not Null** | モードコード |
 | `name` | `varchar(20)` | **Not Null** | モード名 |
 
-**初期データ:**
+**初期データ（5モード）:**
 
 | id | code | name |
 |----|------|------|
 | 1 | RANK | ランクマッチ |
-| 2 | GP | グランプリ |
+| 2 | FREE | フリーマッチ |
 | 3 | ROOM | ルームマッチ |
-| 4 | 2PICK | 2Pick |
-| 5 | OPEN6 | Open 6 |
-| 6 | FREE | フリーマッチ |
+| 4 | GP | グランプリ |
+| 5 | 2PICK | 2Pick |
 
 ### `decks` テーブル
 

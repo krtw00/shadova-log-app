@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="ja" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UI案B: トップナビ＋タブ型 - Shadova Log</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700" rel="stylesheet" />
+    <style>
+        body { font-family: 'Instrument Sans', sans-serif; }
+    </style>
+</head>
+<body class="min-h-screen bg-gray-900 text-gray-100" x-data="{ activeSection: 'battles', battleTab: 'dashboard' }">
+    <!-- Top Navigation Bar -->
+    <header class="sticky top-0 z-50 border-b border-gray-700 bg-gray-900/95 backdrop-blur">
+        <div class="mx-auto max-w-screen-2xl px-4">
+            <div class="flex h-16 items-center justify-between">
+                <!-- Logo -->
+                <div class="flex items-center gap-8">
+                    <a href="#" class="flex items-center gap-2">
+                        <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-purple-600">
+                            <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                            </svg>
+                        </div>
+                        <span class="text-lg font-bold text-purple-400">Shadova Log</span>
+                    </a>
+
+                    <!-- Main Navigation -->
+                    <nav class="hidden md:flex items-center gap-1">
+                        <button
+                            @click="activeSection = 'battles'"
+                            class="px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                            :class="activeSection === 'battles' ? 'bg-gray-800 text-white' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'"
+                        >
+                            対戦記録
+                        </button>
+                        <button
+                            @click="activeSection = 'decks'"
+                            class="px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                            :class="activeSection === 'decks' ? 'bg-gray-800 text-white' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'"
+                        >
+                            デッキ管理
+                        </button>
+                        <button
+                            @click="activeSection = 'stats'"
+                            class="px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                            :class="activeSection === 'stats' ? 'bg-gray-800 text-white' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'"
+                        >
+                            統計・分析
+                        </button>
+                    </nav>
+                </div>
+
+                <!-- Right Side -->
+                <div class="flex items-center gap-3">
+                    <button class="flex items-center gap-2 rounded-lg bg-purple-600 px-4 py-2 text-sm font-medium text-white hover:bg-purple-500 transition-colors">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                        </svg>
+                        <span class="hidden sm:inline">対戦を記録</span>
+                    </button>
+                    <div class="h-8 w-8 rounded-full bg-gray-700 flex items-center justify-center">
+                        <span class="text-xs text-gray-400">U</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Battles Section -->
+    <div x-show="activeSection === 'battles'" class="mx-auto max-w-screen-2xl">
+        <!-- Sub Tabs -->
+        <div class="border-b border-gray-800 px-4">
+            <nav class="flex gap-6">
+                <button
+                    @click="battleTab = 'dashboard'"
+                    class="relative py-4 text-sm font-medium transition-colors"
+                    :class="battleTab === 'dashboard' ? 'text-purple-400' : 'text-gray-400 hover:text-white'"
+                >
+                    ダッシュボード
+                    <span x-show="battleTab === 'dashboard'" class="absolute bottom-0 left-0 right-0 h-0.5 bg-purple-400"></span>
+                </button>
+                <button
+                    @click="battleTab = 'history'"
+                    class="relative py-4 text-sm font-medium transition-colors"
+                    :class="battleTab === 'history' ? 'text-purple-400' : 'text-gray-400 hover:text-white'"
+                >
+                    対戦履歴
+                    <span x-show="battleTab === 'history'" class="absolute bottom-0 left-0 right-0 h-0.5 bg-purple-400"></span>
+                </button>
+                <button
+                    @click="battleTab = 'analysis'"
+                    class="relative py-4 text-sm font-medium transition-colors"
+                    :class="battleTab === 'analysis' ? 'text-purple-400' : 'text-gray-400 hover:text-white'"
+                >
+                    マッチアップ分析
+                    <span x-show="battleTab === 'analysis'" class="absolute bottom-0 left-0 right-0 h-0.5 bg-purple-400"></span>
+                </button>
+            </nav>
+        </div>
+
+        <!-- Dashboard Tab -->
+        <main class="p-4" x-show="battleTab === 'dashboard'">
+            <!-- Hero Stats -->
+            <div class="rounded-2xl bg-gradient-to-r from-purple-900/50 to-gray-800 border border-gray-700 p-6 mb-6">
+                <div class="flex flex-wrap items-center justify-between gap-6">
+                    <div>
+                        <h2 class="text-sm text-gray-400 mb-1">本日の成績</h2>
+                        <div class="flex items-baseline gap-2">
+                            <span class="text-4xl font-bold text-white">8</span>
+                            <span class="text-2xl text-gray-400">勝</span>
+                            <span class="text-4xl font-bold text-white ml-2">3</span>
+                            <span class="text-2xl text-gray-400">敗</span>
+                        </div>
+                        <div class="mt-2 flex items-center gap-2">
+                            <div class="h-2 w-32 bg-gray-700 rounded-full overflow-hidden">
+                                <div class="h-full bg-green-500 rounded-full" style="width: 72.7%"></div>
+                            </div>
+                            <span class="text-green-400 font-medium">72.7%</span>
+                        </div>
+                    </div>
+                    <div class="flex gap-8">
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-purple-400">5</div>
+                            <div class="text-sm text-gray-400">連勝中</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-white">247</div>
+                            <div class="text-sm text-gray-400">総試合</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-green-400">58.3%</div>
+                            <div class="text-sm text-gray-400">通算勝率</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Two Column Layout -->
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+                <!-- Recent Battles (3/5) -->
+                <div class="lg:col-span-3">
+                    <div class="rounded-xl bg-gray-800 border border-gray-700 overflow-hidden">
+                        <div class="flex items-center justify-between border-b border-gray-700 px-4 py-3">
+                            <h2 class="font-semibold text-white">最近の対戦</h2>
+                            <button @click="battleTab = 'history'" class="text-sm text-purple-400 hover:text-purple-300">すべて見る</button>
+                        </div>
+                        <div class="divide-y divide-gray-700/50">
+                            <!-- Battle entries with more detail -->
+                            <div class="flex items-center gap-4 px-4 py-3 hover:bg-gray-700/30 transition-colors">
+                                <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-green-500/10">
+                                    <svg class="h-5 w-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                    </svg>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-medium text-white">秘術ウィッチ</span>
+                                        <span class="text-gray-500">vs</span>
+                                        <span class="text-gray-300">ドラゴン</span>
+                                    </div>
+                                    <div class="flex items-center gap-2 text-sm text-gray-400">
+                                        <span class="px-1.5 py-0.5 rounded bg-gray-700 text-xs">先攻</span>
+                                        <span>ランクマッチ</span>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-sm text-gray-400">5分前</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4 px-4 py-3 hover:bg-gray-700/30 transition-colors">
+                                <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-green-500/10">
+                                    <svg class="h-5 w-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                    </svg>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-medium text-white">秘術ウィッチ</span>
+                                        <span class="text-gray-500">vs</span>
+                                        <span class="text-gray-300">エルフ</span>
+                                    </div>
+                                    <div class="flex items-center gap-2 text-sm text-gray-400">
+                                        <span class="px-1.5 py-0.5 rounded bg-gray-700 text-xs">後攻</span>
+                                        <span>ランクマッチ</span>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-sm text-gray-400">15分前</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4 px-4 py-3 hover:bg-gray-700/30 transition-colors">
+                                <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-red-500/10">
+                                    <svg class="h-5 w-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                    </svg>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-medium text-white">進化ロイヤル</span>
+                                        <span class="text-gray-500">vs</span>
+                                        <span class="text-gray-300">ビショップ</span>
+                                    </div>
+                                    <div class="flex items-center gap-2 text-sm text-gray-400">
+                                        <span class="px-1.5 py-0.5 rounded bg-gray-700 text-xs">先攻</span>
+                                        <span>ランクマッチ</span>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-sm text-gray-400">30分前</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4 px-4 py-3 hover:bg-gray-700/30 transition-colors">
+                                <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-green-500/10">
+                                    <svg class="h-5 w-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                    </svg>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-medium text-white">秘術ウィッチ</span>
+                                        <span class="text-gray-500">vs</span>
+                                        <span class="text-gray-300">ネメシス</span>
+                                    </div>
+                                    <div class="flex items-center gap-2 text-sm text-gray-400">
+                                        <span class="px-1.5 py-0.5 rounded bg-gray-700 text-xs">後攻</span>
+                                        <span>ランクマッチ</span>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-sm text-gray-400">45分前</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Side Panel (2/5) -->
+                <div class="lg:col-span-2 space-y-6">
+                    <!-- Active Deck -->
+                    <div class="rounded-xl bg-gray-800 border border-gray-700 p-4">
+                        <h3 class="text-sm font-medium text-gray-400 mb-3">現在のデッキ</h3>
+                        <div class="flex items-center gap-3">
+                            <div class="h-12 w-12 rounded-lg bg-purple-600/20 flex items-center justify-center">
+                                <span class="text-xl text-purple-400 font-bold">W</span>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-semibold text-white">秘術ウィッチ</h4>
+                                <p class="text-sm text-gray-400">今日: 7勝2敗 (77.8%)</p>
+                            </div>
+                            <button class="text-sm text-purple-400 hover:text-purple-300">切替</button>
+                        </div>
+                    </div>
+
+                    <!-- Quick Class Stats -->
+                    <div class="rounded-xl bg-gray-800 border border-gray-700 p-4">
+                        <h3 class="text-sm font-medium text-gray-400 mb-3">対面別（今日）</h3>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div class="rounded-lg bg-gray-700/50 p-2 text-center">
+                                <div class="text-xs text-gray-400">vsドラゴン</div>
+                                <div class="text-lg font-bold text-green-400">3-1</div>
+                            </div>
+                            <div class="rounded-lg bg-gray-700/50 p-2 text-center">
+                                <div class="text-xs text-gray-400">vsエルフ</div>
+                                <div class="text-lg font-bold text-green-400">2-0</div>
+                            </div>
+                            <div class="rounded-lg bg-gray-700/50 p-2 text-center">
+                                <div class="text-xs text-gray-400">vsビショップ</div>
+                                <div class="text-lg font-bold text-red-400">1-2</div>
+                            </div>
+                            <div class="rounded-lg bg-gray-700/50 p-2 text-center">
+                                <div class="text-xs text-gray-400">vsネメシス</div>
+                                <div class="text-lg font-bold text-yellow-400">2-0</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Win Streak -->
+                    <div class="rounded-xl bg-gradient-to-br from-purple-900/30 to-gray-800 border border-purple-500/30 p-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="text-sm text-purple-300">連勝記録</h3>
+                                <div class="text-3xl font-bold text-white mt-1">5連勝中!</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-sm text-gray-400">自己ベスト</div>
+                                <div class="text-xl font-bold text-purple-400">12連勝</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- History Tab -->
+        <main class="p-4" x-show="battleTab === 'history'" style="display: none;">
+            <div class="rounded-xl bg-gray-800 border border-gray-700 overflow-hidden">
+                <div class="flex items-center justify-between border-b border-gray-700 px-4 py-3">
+                    <h2 class="font-semibold text-white">対戦履歴</h2>
+                    <div class="flex items-center gap-2">
+                        <select class="rounded-lg bg-gray-700 border-gray-600 text-sm text-gray-300 px-3 py-1.5">
+                            <option>すべてのデッキ</option>
+                            <option>秘術ウィッチ</option>
+                            <option>進化ロイヤル</option>
+                        </select>
+                        <select class="rounded-lg bg-gray-700 border-gray-600 text-sm text-gray-300 px-3 py-1.5">
+                            <option>すべてのモード</option>
+                            <option>ランクマッチ</option>
+                            <option>フリーマッチ</option>
+                        </select>
+                    </div>
+                </div>
+                <table class="w-full">
+                    <thead class="bg-gray-700/50">
+                        <tr>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">結果</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">使用デッキ</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">相手</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">先/後</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">モード</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">日時</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-700/50">
+                        <tr class="hover:bg-gray-700/30">
+                            <td class="px-4 py-3"><span class="px-2 py-1 text-xs font-medium rounded bg-green-500/10 text-green-400">WIN</span></td>
+                            <td class="px-4 py-3 text-white">秘術ウィッチ</td>
+                            <td class="px-4 py-3 text-gray-300">ドラゴン</td>
+                            <td class="px-4 py-3 text-gray-400">先攻</td>
+                            <td class="px-4 py-3 text-gray-400">ランクマッチ</td>
+                            <td class="px-4 py-3 text-gray-500">5分前</td>
+                        </tr>
+                        <tr class="hover:bg-gray-700/30">
+                            <td class="px-4 py-3"><span class="px-2 py-1 text-xs font-medium rounded bg-green-500/10 text-green-400">WIN</span></td>
+                            <td class="px-4 py-3 text-white">秘術ウィッチ</td>
+                            <td class="px-4 py-3 text-gray-300">エルフ</td>
+                            <td class="px-4 py-3 text-gray-400">後攻</td>
+                            <td class="px-4 py-3 text-gray-400">ランクマッチ</td>
+                            <td class="px-4 py-3 text-gray-500">15分前</td>
+                        </tr>
+                        <tr class="hover:bg-gray-700/30">
+                            <td class="px-4 py-3"><span class="px-2 py-1 text-xs font-medium rounded bg-red-500/10 text-red-400">LOSE</span></td>
+                            <td class="px-4 py-3 text-white">進化ロイヤル</td>
+                            <td class="px-4 py-3 text-gray-300">ビショップ</td>
+                            <td class="px-4 py-3 text-gray-400">先攻</td>
+                            <td class="px-4 py-3 text-gray-400">ランクマッチ</td>
+                            <td class="px-4 py-3 text-gray-500">30分前</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+
+        <!-- Analysis Tab -->
+        <main class="p-4" x-show="battleTab === 'analysis'" style="display: none;">
+            <div class="text-center py-20 text-gray-400">
+                マッチアップ分析画面（実装予定）
+            </div>
+        </main>
+    </div>
+
+    <!-- Decks Section -->
+    <div x-show="activeSection === 'decks'" style="display: none;" class="mx-auto max-w-screen-2xl p-4">
+        <div class="flex items-center justify-between mb-6">
+            <h1 class="text-2xl font-bold text-white">デッキ管理</h1>
+            <button class="flex items-center gap-2 rounded-lg bg-purple-600 px-4 py-2 text-sm font-medium text-white hover:bg-purple-500">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                </svg>
+                新規デッキ
+            </button>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            <div class="rounded-xl bg-gray-800 border border-gray-700 p-5 hover:border-purple-500/50 transition-all hover:shadow-lg hover:shadow-purple-500/10 cursor-pointer">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="h-12 w-12 rounded-xl bg-purple-600/20 flex items-center justify-center">
+                        <span class="text-2xl text-purple-400 font-bold">W</span>
+                    </div>
+                    <span class="px-2 py-1 text-xs rounded-full bg-green-500/10 text-green-400">アクティブ</span>
+                </div>
+                <h3 class="text-lg font-semibold text-white mb-1">秘術ウィッチ</h3>
+                <p class="text-sm text-gray-400 mb-4">ウィッチ</p>
+                <div class="flex items-center justify-between pt-3 border-t border-gray-700">
+                    <span class="text-sm text-gray-400">45戦 32勝</span>
+                    <span class="text-lg font-bold text-green-400">71.1%</span>
+                </div>
+            </div>
+            <div class="rounded-xl bg-gray-800 border border-gray-700 p-5 hover:border-purple-500/50 transition-all hover:shadow-lg hover:shadow-purple-500/10 cursor-pointer">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="h-12 w-12 rounded-xl bg-yellow-600/20 flex items-center justify-center">
+                        <span class="text-2xl text-yellow-400 font-bold">R</span>
+                    </div>
+                </div>
+                <h3 class="text-lg font-semibold text-white mb-1">進化ロイヤル</h3>
+                <p class="text-sm text-gray-400 mb-4">ロイヤル</p>
+                <div class="flex items-center justify-between pt-3 border-t border-gray-700">
+                    <span class="text-sm text-gray-400">28戦 15勝</span>
+                    <span class="text-lg font-bold text-yellow-400">53.6%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Section -->
+    <div x-show="activeSection === 'stats'" style="display: none;" class="mx-auto max-w-screen-2xl p-4">
+        <div class="text-center py-20 text-gray-400">
+            統計・分析画面（実装予定）
+        </div>
+    </div>
+
+    <!-- Design Notes -->
+    <div class="fixed bottom-4 right-4 max-w-sm rounded-xl bg-gray-800 border border-purple-500/50 p-4 shadow-xl">
+        <h3 class="font-bold text-purple-400 mb-2">案B: トップナビ＋タブ型</h3>
+        <ul class="text-sm text-gray-300 space-y-1">
+            <li>上部固定ナビで縦方向を最大活用</li>
+            <li>対戦記録内でさらにタブ分け（ダッシュボード/履歴/分析）</li>
+            <li>ヒーロースタッツで今日の成績を大きく表示</li>
+            <li>サイドバーがないため全幅使用可能</li>
+        </ul>
+    </div>
+</body>
+</html>
