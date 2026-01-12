@@ -2,6 +2,7 @@
 set -e
 
 # Laravelのキャッシュをクリアして再生成
+php artisan config:clear
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
