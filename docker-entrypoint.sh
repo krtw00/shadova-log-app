@@ -9,11 +9,15 @@ echo "DB_DATABASE: $DB_DATABASE"
 echo "DB_PORT: $DB_PORT"
 echo "======================================="
 
-# Laravelのキャッシュをクリアして再生成
+# Laravelのキャッシュをクリア（キャッシュは使わない）
 php artisan config:clear
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
+php artisan route:clear
+php artisan view:clear
+
+# デバッグ: Laravelの設定を確認
+echo "=== Laravel DB Config ==="
+php artisan tinker --execute="echo 'DB Username: ' . config('database.connections.pgsql.username');"
+echo "========================="
 
 # マイグレーションを実行（環境変数で制御、デフォルトはスキップ）
 if [ "${RUN_MIGRATIONS:-false}" = "true" ]; then
