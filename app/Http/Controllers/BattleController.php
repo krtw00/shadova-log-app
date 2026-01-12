@@ -184,7 +184,7 @@ class BattleController extends Controller
 
         // クラス別勝率
         $classBattles = (clone $query)->today()
-            ->selectRaw('opponent_class_id, SUM(result) as wins, COUNT(*) as total')
+            ->selectRaw('opponent_class_id, SUM(CASE WHEN result THEN 1 ELSE 0 END) as wins, COUNT(*) as total')
             ->groupBy('opponent_class_id')
             ->with('opponentClass')
             ->get();

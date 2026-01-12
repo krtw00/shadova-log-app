@@ -27,6 +27,10 @@ services:
         sync: false
       - key: DB_PASSWORD
         sync: false
+      - key: DB_SSLMODE
+        value: require
+      - key: DB_EMULATE_PREPARES
+        value: "true"
       - key: SUPABASE_URL
         sync: false
       - key: SUPABASE_KEY
@@ -37,3 +41,5 @@ services:
         value: file
       - key: QUEUE_CONNECTION
         value: sync
+      - key: RUN_MIGRATIONS
+        value: "false"
