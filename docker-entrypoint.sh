@@ -1,6 +1,14 @@
 #!/bin/bash
 set -e
 
+# デバッグ: 環境変数を表示
+echo "=== Database Environment Variables ==="
+echo "DB_HOST: $DB_HOST"
+echo "DB_USERNAME: $DB_USERNAME"
+echo "DB_DATABASE: $DB_DATABASE"
+echo "DB_PORT: $DB_PORT"
+echo "======================================="
+
 # Laravelのキャッシュをクリアして再生成
 php artisan config:clear
 php artisan config:cache
