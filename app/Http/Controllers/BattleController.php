@@ -35,7 +35,7 @@ class BattleController extends Controller
             ->paginate($perPage);
 
         $decks = $user->decks()->withCount(['battles', 'battles as wins_count' => function($q) {
-            $q->where('result', true);
+            $q->whereRaw('result is true');
         }])->with('leaderClass')->get();
         $leaderClasses = LeaderClass::all();
         $gameModes = GameMode::all();
@@ -190,10 +190,10 @@ class BattleController extends Controller
             ->get();
 
         // 先攻後攻勝率
-        $firstWins = (clone $query)->today()->where('is_first', true)->wins()->count();
-        $firstTotal = (clone $query)->today()->where('is_first', true)->count();
-        $secondWins = (clone $query)->today()->where('is_first', false)->wins()->count();
-        $secondTotal = (clone $query)->today()->where('is_first', false)->count();
+        $firstWins = (clone $query)->today()->whereRaw('is_first is true')->wins()->count();
+        $firstTotal = (clone $query)->today()->whereRaw('is_first is true')->count();
+        $secondWins = (clone $query)->today()->whereRaw('is_first is false')->wins()->count();
+        $secondTotal = (clone $query)->today()->whereRaw('is_first is false')->count();
 
         return [
             'today' => [

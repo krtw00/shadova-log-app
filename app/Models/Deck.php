@@ -39,14 +39,14 @@ class Deck extends Model
         if ($total === 0) {
             return 0;
         }
-        $wins = $this->battles()->where('result', true)->count();
+        $wins = $this->battles()->whereRaw('result is true')->count();
         return round(($wins / $total) * 100, 1);
     }
 
     public function record(): array
     {
-        $wins = $this->battles()->where('result', true)->count();
-        $losses = $this->battles()->where('result', false)->count();
+        $wins = $this->battles()->whereRaw('result is true')->count();
+        $losses = $this->battles()->whereRaw('result is false')->count();
         return ['wins' => $wins, 'losses' => $losses];
     }
 }

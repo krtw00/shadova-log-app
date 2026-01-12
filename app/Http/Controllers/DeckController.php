@@ -21,7 +21,7 @@ class DeckController extends Controller
         $user = $this->getUser();
         $decks = $user->decks()
             ->with('leaderClass')
-            ->withCount(['battles', 'battles as wins_count' => fn($q) => $q->where('result', true)])
+            ->withCount(['battles', 'battles as wins_count' => fn($q) => $q->whereRaw('result is true')])
             ->orderBy('updated_at', 'desc')
             ->get();
 

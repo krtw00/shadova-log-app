@@ -71,7 +71,7 @@ class StreamerController extends Controller
             }
 
             $deckTotal = $deckQuery->count();
-            $deckWins = (clone $deckQuery)->where('result', true)->count();
+            $deckWins = (clone $deckQuery)->whereRaw('result is true')->count();
             $deckStats = [
                 'total' => $deckTotal,
                 'wins' => $deckWins,
@@ -139,7 +139,7 @@ class StreamerController extends Controller
             }
 
             $deckTotal = $deckQuery->count();
-            $deckWins = (clone $deckQuery)->where('result', true)->count();
+            $deckWins = (clone $deckQuery)->whereRaw('result is true')->count();
             $deckStats = [
                 'name' => $currentDeck->name,
                 'class' => $currentDeck->leaderClass->name,

@@ -67,22 +67,22 @@ class Battle extends Model
 
     public function scopeWins($query)
     {
-        return $query->where('result', true);
+        return $query->whereRaw('result is true');
     }
 
     public function scopeLosses($query)
     {
-        return $query->where('result', false);
+        return $query->whereRaw('result is false');
     }
 
     public function scopeFirst($query)
     {
-        return $query->where('is_first', true);
+        return $query->whereRaw('is_first is true');
     }
 
     public function scopeSecond($query)
     {
-        return $query->where('is_first', false);
+        return $query->whereRaw('is_first is false');
     }
 
     public function scopeToday($query)

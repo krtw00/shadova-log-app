@@ -16,7 +16,7 @@ class PublicProfileController extends Controller
 
         $shareLink = ShareLink::where('user_id', $user->id)
             ->where('slug', $slug)
-            ->where('is_active', true)
+            ->whereRaw('is_active is true')
             ->firstOrFail();
 
         // 期間内の対戦記録を取得

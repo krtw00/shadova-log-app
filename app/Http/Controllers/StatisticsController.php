@@ -35,7 +35,7 @@ class StatisticsController extends Controller
 
         // 総合統計
         $totalBattles = (clone $baseQuery)->count();
-        $totalWins = (clone $baseQuery)->where('result', true)->count();
+        $totalWins = (clone $baseQuery)->whereRaw('result is true')->count();
         $totalLosses = $totalBattles - $totalWins;
         $winRate = $totalBattles > 0 ? round(($totalWins / $totalBattles) * 100, 1) : 0;
 
@@ -51,14 +51,14 @@ class StatisticsController extends Controller
             ->count();
 
         // 先攻/後攻勝率
-        $firstBattles = (clone $baseQuery)->where('is_first', true);
+        $firstBattles = (clone $baseQuery)->whereRaw('is_first is true');
         $firstTotal = (clone $firstBattles)->count();
-        $firstWins = (clone $firstBattles)->where('result', true)->count();
+        $firstWins = (clone $firstBattles)->whereRaw('result is true')->count();
         $firstWinRate = $firstTotal > 0 ? round(($firstWins / $firstTotal) * 100, 1) : 0;
 
-        $secondBattles = (clone $baseQuery)->where('is_first', false);
+        $secondBattles = (clone $baseQuery)->whereRaw('is_first is false');
         $secondTotal = (clone $secondBattles)->count();
-        $secondWins = (clone $secondBattles)->where('result', true)->count();
+        $secondWins = (clone $secondBattles)->whereRaw('result is true')->count();
         $secondWinRate = $secondTotal > 0 ? round(($secondWins / $secondTotal) * 100, 1) : 0;
 
         // クラス別対戦成績
@@ -66,7 +66,7 @@ class StatisticsController extends Controller
             ->select(
                 'opponent_class_id',
                 DB::raw('COUNT(*) as total'),
-                DB::raw('SUM(CASE WHEN result = 1 THEN 1 ELSE 0 END) as wins')
+                DB::raw('SUM(CASE WHEN result THEN 1 ELSE 0 END) as wins')
             )
             ->groupBy('opponent_class_id')
             ->get()
@@ -84,7 +84,7 @@ class StatisticsController extends Controller
             }])
             ->withCount(['battles as wins' => function ($q) use ($period) {
                 $this->applyPeriodFilter($q, $period);
-                $q->where('result', true);
+                $q->whereRaw('result is true');
             }])
             ->with('leaderClass')
             ->get()
