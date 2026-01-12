@@ -181,7 +181,7 @@ class StatisticsController extends Controller
                 DB::raw('COALESCE(decks.leader_class_id, battles.my_class_id) as my_class_id'),
                 'battles.opponent_class_id',
                 DB::raw('COUNT(*) as total'),
-                DB::raw('SUM(CASE WHEN battles.result = 1 THEN 1 ELSE 0 END) as wins')
+                DB::raw('SUM(CASE WHEN battles.result THEN 1 ELSE 0 END) as wins')
             )
             ->leftJoin('decks', 'battles.deck_id', '=', 'decks.id')
             ->groupBy('my_class_id', 'battles.opponent_class_id')
