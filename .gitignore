@@ -29,5 +29,10 @@ database/*.sqlite
 # MCP settings
 .mcp.json
 
+# Claude Code local settings (personal, not shared)
+CLAUDE.local.md
+.claude/CLAUDE.local.md
+.claude/settings.local.json
+
 # Duplicate ui-mocks at root (use public/ui-mocks/)
 /ui-mocks/
