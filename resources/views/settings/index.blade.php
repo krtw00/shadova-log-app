@@ -307,12 +307,14 @@
                                    placeholder="DELETE"
                                    class="w-full px-4 py-2 rounded-lg dark:bg-gray-900 bg-white border dark:border-gray-600 border-gray-300 dark:text-white text-gray-900 dark:placeholder-gray-500 placeholder-gray-400 focus:border-red-500 focus:ring-1 focus:ring-red-500">
                         </div>
+                        @if($user->password)
                         <div>
                             <label class="block text-sm dark:text-gray-500 text-gray-500 mb-1">パスワードを入力</label>
                             <input type="password" name="password"
                                    placeholder="パスワード"
                                    class="w-full px-4 py-2 rounded-lg dark:bg-gray-900 bg-white border dark:border-gray-600 border-gray-300 dark:text-white text-gray-900 dark:placeholder-gray-500 placeholder-gray-400 focus:border-red-500 focus:ring-1 focus:ring-red-500">
                         </div>
+                        @endif
                     </div>
                     <div class="flex gap-3">
                         <button type="button" @click="showDeleteAccountModal = false; confirmAccountText = ''"

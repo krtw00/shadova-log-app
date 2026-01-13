@@ -4,8 +4,11 @@ namespace App\Providers;
 
 use App\Database\PostgresConnection;
 use Illuminate\Database\Connection;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
+use SocialiteProviders\Discord\DiscordExtendSocialite;
+use SocialiteProviders\Manager\SocialiteWasCalled;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -28,5 +31,8 @@ class AppServiceProvider extends ServiceProvider
         if (app()->environment('production')) {
             URL::forceScheme('https');
         }
+
+        // Discord OAuth プロバイダー登録
+        Event::listen(SocialiteWasCalled::class, DiscordExtendSocialite::class);
     }
 }

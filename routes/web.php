@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\OAuthController;
 use App\Http\Controllers\BattleController;
 use App\Http\Controllers\DeckController;
 use App\Http\Controllers\PublicProfileController;
@@ -22,6 +23,10 @@ Route::middleware('guest')->group(function () {
     Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name('password.email');
     Route::get('/reset-password/{token}', [AuthController::class, 'showResetPasswordForm'])->name('password.reset');
     Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
+
+    // OAuth認証
+    Route::get('/auth/{provider}', [OAuthController::class, 'redirectToProvider'])->name('oauth.redirect');
+    Route::get('/auth/{provider}/callback', [OAuthController::class, 'handleProviderCallback'])->name('oauth.callback');
 });
 
 // ログアウト（認証済み用）

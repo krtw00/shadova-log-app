@@ -185,10 +185,17 @@ class SettingsController extends Controller
     {
         $user = $this->getUser();
 
-        $request->validate([
+        // パスワードがあるユーザーはパスワード確認必須
+        // OAuthのみユーザー（パスワードなし）は確認テキストのみ
+        $rules = [
             'confirm_delete_account' => ['required', 'in:DELETE'],
-            'password' => ['required', 'current_password'],
-        ]);
+        ];
+
+        if ($user->password) {
+            $rules['password'] = ['required', 'current_password'];
+        }
+
+        $request->validate($rules);
 
         // Delete user (cascades to related data)
         $user->delete();

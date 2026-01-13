@@ -24,6 +24,9 @@ class User extends Authenticatable
         'email',
         'password',
         'supabase_id',
+        'google_id',
+        'discord_id',
+        'avatar',
         'theme_preference',
     ];
 
