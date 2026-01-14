@@ -22,11 +22,12 @@
 
 | レイヤー | 技術 |
 |---------|------|
-| バックエンド | Laravel 11 (PHP 8.2+) |
+| バックエンド | Laravel 12 (PHP 8.2+) |
 | フロントエンド | Blade + Alpine.js 3.15 |
 | CSS | Tailwind CSS 4.0 |
 | ビルド | Vite 7.0 |
 | データベース | PostgreSQL (Supabase) |
+| 認証 | Laravel Socialite (Google/Discord OAuth) |
 | ホスティング | Render (Docker) |
 
 ---

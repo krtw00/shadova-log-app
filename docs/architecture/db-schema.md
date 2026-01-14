@@ -90,15 +90,18 @@
 
 ### `users` テーブル
 
-ユーザーアカウント情報を管理します。
+ユーザーアカウント情報を管理します。OAuth認証にも対応。
 
 | カラム名 | データ型 | 制約 | 説明 |
 |:---|:---|:---|:---|
 | `id` | `bigint` | **PK**, Auto Increment | ユーザーID |
 | `email` | `varchar(255)` | **Unique**, **Not Null** | メールアドレス |
+| `avatar` | `varchar(255)` | Nullable | プロフィール画像URL（OAuth取得） |
 | `username` | `varchar(255)` | **Unique**, Nullable | ユーザー名（公開用） |
-| `password` | `varchar(255)` | **Not Null** | パスワード（Bcryptハッシュ） |
+| `password` | `varchar(255)` | Nullable | パスワード（OAuth時はnull可） |
 | `supabase_id` | `varchar(255)` | **Unique**, Nullable | Supabase Auth ID（レガシー） |
+| `google_id` | `varchar(255)` | **Unique**, Nullable | Google OAuth ID |
+| `discord_id` | `varchar(255)` | **Unique**, Nullable | Discord OAuth ID |
 | `email_verified_at` | `timestamp` | Nullable | メール認証日時 |
 | `remember_token` | `varchar(100)` | Nullable | ログイン維持トークン |
 | `created_at` | `timestamp` | Nullable | 作成日時 |
@@ -407,3 +410,4 @@ public function group() { return $this->belongsTo(Group::class); }
 | 18 | `make_deck_id_nullable_in_battles_table` | deck_id nullable化 |
 | 19 | `add_streamer_mode_to_user_settings_table` | 配信者モード追加 |
 | 20 | `create_streamer_sessions_table` | 配信セッション作成 |
+| 21 | `add_oauth_fields_to_users_table` | OAuth認証フィールド追加（google_id, discord_id, avatar） |
