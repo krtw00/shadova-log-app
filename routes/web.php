@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\OAuthController;
 use App\Http\Controllers\BattleController;
 use App\Http\Controllers\DeckController;
+use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\PublicProfileController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\ShareController;
@@ -85,6 +86,12 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/streamer/session/end', [StreamerController::class, 'endSession'])->name('streamer.session.end');
     Route::post('/streamer/streak/reset', [StreamerController::class, 'resetStreak'])->name('streamer.streak.reset');
     Route::put('/streamer/overlay/settings', [StreamerController::class, 'updateOverlaySettings'])->name('streamer.overlay.settings');
+
+    // フィードバック
+    Route::get('/feedback', [FeedbackController::class, 'index'])->name('feedback.index');
+    Route::post('/feedback/bug', [FeedbackController::class, 'storeBug'])->name('feedback.bug');
+    Route::post('/feedback/enhancement', [FeedbackController::class, 'storeEnhancement'])->name('feedback.enhancement');
+    Route::post('/feedback/contact', [FeedbackController::class, 'storeContact'])->name('feedback.contact');
 });
 
 // 公開プロフィール（認証不要）

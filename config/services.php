@@ -47,4 +47,10 @@ return [
         'redirect' => env('DISCORD_REDIRECT_URI'),
     ],
 
+    'github' => [
+        'token' => env('GITHUB_TOKEN'),
+        'owner' => env('GITHUB_OWNER', 'krtw00'),
+        'repo' => env('GITHUB_REPO', 'shadova-log-app'),
+    ],
+
 ];
