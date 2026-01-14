@@ -14,9 +14,9 @@ class GitHubService
 
     public function __construct()
     {
-        $this->token = config('services.github.token');
-        $this->owner = config('services.github.owner');
-        $this->repo = config('services.github.repo');
+        $this->token = config('services.github.token') ?? '';
+        $this->owner = config('services.github.owner') ?? 'krtw00';
+        $this->repo = config('services.github.repo') ?? 'shadova-log-app';
     }
 
     /**
