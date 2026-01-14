@@ -4,12 +4,12 @@ set -e
 # Laravelのキャッシュをクリア
 php artisan optimize:clear
 
-# マイグレーションは明示的に有効化された場合のみ実行
-if [ "${RUN_MIGRATIONS:-false}" = "true" ]; then
+# マイグレーションを実行（SKIP_MIGRATIONS=trueで無効化可能）
+if [ "${SKIP_MIGRATIONS:-false}" = "true" ]; then
+    echo "Skipping migrations (SKIP_MIGRATIONS=true)"
+else
     echo "Running migrations..."
     php artisan migrate --force
-else
-    echo "Skipping migrations (set RUN_MIGRATIONS=true to enable)"
 fi
 
 # Apacheを起動
