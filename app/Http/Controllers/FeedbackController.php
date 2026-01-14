@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Services\GitHubService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Carbon;
 
 class FeedbackController extends Controller
 {
@@ -30,8 +30,7 @@ class FeedbackController extends Controller
             'actual' => 'nullable|string|max:1000',
         ]);
 
-        $user = Auth::user();
-        $body = $this->buildBugReportBody($validated, $request, $user);
+        $body = $this->buildBugReportBody($validated, $request);
 
         $result = $this->github->createIssue(
             title: "[Bug] {$validated['title']}",
@@ -59,8 +58,7 @@ class FeedbackController extends Controller
             'use_case' => 'nullable|string|max:2000',
         ]);
 
-        $user = Auth::user();
-        $body = $this->buildEnhancementBody($validated, $user);
+        $body = $this->buildEnhancementBody($validated);
 
         $result = $this->github->createIssue(
             title: "[Feature Request] {$validated['title']}",
@@ -87,8 +85,7 @@ class FeedbackController extends Controller
             'message' => 'required|string|max:5000',
         ]);
 
-        $user = Auth::user();
-        $body = $this->buildContactBody($validated, $user);
+        $body = $this->buildContactBody($validated);
 
         $result = $this->github->createIssue(
             title: "[Question] {$validated['subject']}",
@@ -105,13 +102,13 @@ class FeedbackController extends Controller
             ->with('error', '送信に失敗しました。しばらく経ってから再度お試しください。');
     }
 
-    private function buildBugReportBody(array $data, Request $request, $user): string
+    private function buildBugReportBody(array $data, Request $request): string
     {
-        $userAgent = $request->userAgent() ?? 'Unknown';
-        $now = now()->toIso8601String();
         $steps = $data['steps'] ?? '未記入';
         $expected = $data['expected'] ?? '未記入';
         $actual = $data['actual'] ?? '未記入';
+        $userAgent = $request->userAgent() ?? 'Unknown';
+        $now = Carbon::now()->toIso8601String();
 
         return <<<MD
 ## 説明
@@ -127,16 +124,15 @@ class FeedbackController extends Controller
 {$actual}
 
 ---
-**報告者:** User ID {$user->id}
 **ブラウザ:** {$userAgent}
 **送信日時:** {$now}
 MD;
     }
 
-    private function buildEnhancementBody(array $data, $user): string
+    private function buildEnhancementBody(array $data): string
     {
-        $now = now()->toIso8601String();
         $useCase = $data['use_case'] ?? '未記入';
+        $now = Carbon::now()->toIso8601String();
 
         return <<<MD
 ## 説明
@@ -146,21 +142,19 @@ MD;
 {$useCase}
 
 ---
-**要望者:** User ID {$user->id}
 **送信日時:** {$now}
 MD;
     }
 
-    private function buildContactBody(array $data, $user): string
+    private function buildContactBody(array $data): string
     {
-        $now = now()->toIso8601String();
+        $now = Carbon::now()->toIso8601String();
 
         return <<<MD
 ## メッセージ
 {$data['message']}
 
 ---
-**送信者:** {$user->name} (ID: {$user->id}, Email: {$user->email})
 **送信日時:** {$now}
 MD;
     }
