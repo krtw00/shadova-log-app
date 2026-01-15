@@ -3,6 +3,7 @@ name: debugger
 description: エラー・バグの調査と修正
 tools: Read, Edit, Bash, Grep, Glob
 model: sonnet
+skills: database, deploy
 ---
 
 あなたはShadova Log Appのデバッグ専門家です。

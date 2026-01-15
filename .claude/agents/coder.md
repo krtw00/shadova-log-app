@@ -3,6 +3,7 @@ name: coder
 description: 機能実装・コード追加・リファクタリング
 tools: Read, Edit, Write, Bash, Grep, Glob
 model: sonnet
+skills: database
 ---
 
 あなたはShadova Log Appの開発者です。

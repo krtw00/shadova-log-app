@@ -276,6 +276,183 @@ jobs:
 
 ---
 
+## ロールバック手順
+
+デプロイ後に問題が発生した場合のロールバック手順です。
+
+### Render でのロールバック
+
+1. **Render ダッシュボードでのロールバック**
+   - Events タブを開く
+   - 正常に動作していたデプロイを選択
+   - 「Rollback to this deploy」をクリック
+
+2. **Git を使用したロールバック**
+   ```bash
+   # 前のコミットに戻す
+   git revert HEAD
+   git push origin main
+
+   # または特定のコミットに戻す
+   git revert <commit-hash>
+   git push origin main
+   ```
+
+### マイグレーションのロールバック
+
+```bash
+# 最後のマイグレーションを1つ戻す
+php artisan migrate:rollback --step=1
+
+# 特定のバッチまで戻す
+php artisan migrate:rollback --batch=3
+
+# 全てロールバック（注意: データ損失の可能性）
+php artisan migrate:reset
+```
+
+**注意事項:**
+- ロールバック前に必ずバックアップを取得
+- `down()` メソッドが正しく実装されているか確認
+- 本番環境では `--force` オプションが必要
+
+### 緊急時のロールバックフロー
+
+```
+1. 障害検知
+   ↓
+2. 影響範囲の確認（ユーザー影響度）
+   ↓
+3. ロールバック判断（5分以内に復旧できなければロールバック）
+   ↓
+4. Render でロールバック実行
+   ↓
+5. 動作確認
+   ↓
+6. 原因調査・修正
+```
+
+---
+
+## Secrets / Config 管理
+
+### 環境変数の分類
+
+| 分類 | 例 | 管理方法 |
+|-----|-----|---------|
+| シークレット | `DB_PASSWORD`, `APP_KEY` | Render Environment Variables（暗号化） |
+| 設定値 | `APP_ENV`, `LOG_LEVEL` | Render Environment Variables |
+| 公開設定 | `APP_NAME`, `APP_LOCALE` | `.env.example` + Render |
+
+### シークレット管理のベストプラクティス
+
+1. **絶対にコミットしない**
+   - `.env` は `.gitignore` に含める
+   - シークレットを含むファイルをコミットしない
+
+2. **Render での管理**
+   - Environment Variables でシークレットを設定
+   - 「Secret」タイプを使用（値が非表示になる）
+
+3. **ローテーション**
+   - `APP_KEY`: 定期的な更新は不要（ユーザーセッションが切れる）
+   - `DB_PASSWORD`: 漏洩の疑いがある場合のみ更新
+   - OAuth クライアントシークレット: プロバイダーのガイドラインに従う
+
+### 環境別の設定
+
+| 設定項目 | 開発環境 | 本番環境 |
+|---------|---------|---------|
+| `APP_ENV` | local | production |
+| `APP_DEBUG` | true | **false** |
+| `LOG_LEVEL` | debug | error |
+| `SESSION_DRIVER` | file | database |
+| `CACHE_STORE` | file | database |
+
+---
+
+## マイグレーション方針
+
+### 本番環境でのマイグレーション
+
+1. **デプロイ前の確認**
+   ```bash
+   # ローカルでマイグレーションテスト
+   php artisan migrate:fresh
+   php artisan migrate:rollback
+   ```
+
+2. **デプロイ時の実行**
+   - Render の Start Command に含める（推奨）
+   - または手動で `php artisan migrate --force`
+
+3. **破壊的変更の対応**
+   - カラム削除: 2段階デプロイ（1. 参照削除 → 2. カラム削除）
+   - テーブル名変更: 新テーブル作成 → データ移行 → 旧テーブル削除
+
+### マイグレーションのベストプラクティス
+
+```php
+// 良い例: ロールバック可能
+public function up(): void
+{
+    Schema::table('battles', function (Blueprint $table) {
+        $table->string('notes', 500)->nullable()->after('result');
+    });
+}
+
+public function down(): void
+{
+    Schema::table('battles', function (Blueprint $table) {
+        $table->dropColumn('notes');
+    });
+}
+
+// 悪い例: ロールバック不可
+public function down(): void
+{
+    // データが失われる可能性がある操作は慎重に
+}
+```
+
+---
+
+## リリース前チェックリスト
+
+### コードレビュー
+
+- [ ] PR がレビュー済み
+- [ ] テストが全て通過
+- [ ] コードスタイルチェック通過（`php artisan pint`）
+- [ ] セキュリティ脆弱性なし（`composer audit`）
+
+### 機能確認
+
+- [ ] 新機能が仕様通り動作
+- [ ] 既存機能への影響なし
+- [ ] エラーハンドリングが適切
+- [ ] レスポンシブ対応（モバイル確認）
+
+### デプロイ準備
+
+- [ ] マイグレーションファイルの確認
+- [ ] 環境変数の追加・変更がある場合、Render に設定済み
+- [ ] 依存パッケージの更新がある場合、`composer.lock` / `package-lock.json` コミット済み
+- [ ] バックアップ取得済み（大規模変更の場合）
+
+### デプロイ後確認
+
+- [ ] デプロイが正常完了
+- [ ] ヘルスチェック通過
+- [ ] ログにエラーなし
+- [ ] 主要機能の動作確認
+  - [ ] ログイン/ログアウト
+  - [ ] 対戦記録の作成/編集/削除
+  - [ ] 統計表示
+  - [ ] 配信者モード（有効な場合）
+
+---
+
 ## 本番環境チェックリスト
 
 ### デプロイ前

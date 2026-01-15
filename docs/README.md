@@ -112,6 +112,7 @@ docs/
 | ドキュメント | 説明 |
 |-------------|------|
 | [feature-design.md](./design/feature-design.md) | 7つの主要機能の設計詳細 |
+| [mobile-ui-design.md](./design/mobile-ui-design.md) | モバイルUI設計（予定） |
 
 ---
 

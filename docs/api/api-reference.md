@@ -639,23 +639,223 @@ OBS用オーバーレイウィンドウを表示します。
 
 ## エラーレスポンス
 
-### バリデーションエラー
+### HTTPステータスコード一覧
+
+| ステータスコード | 説明 | 発生条件 |
+|-----------------|------|---------|
+| 200 OK | 成功 | GET リクエスト成功時 |
+| 302 Found | リダイレクト | POST/PUT/DELETE 成功時 |
+| 401 Unauthorized | 未認証 | ログインが必要なルートへの未認証アクセス |
+| 403 Forbidden | 認可エラー | 他ユーザーのリソースへのアクセス |
+| 404 Not Found | リソース不在 | 存在しないリソースへのアクセス |
+| 419 Page Expired | CSRFトークン無効 | CSRFトークンの期限切れ/不一致 |
+| 422 Unprocessable Entity | バリデーションエラー | 入力値が不正 |
+| 429 Too Many Requests | レート制限 | 短時間に過剰なリクエスト |
+| 500 Internal Server Error | サーバーエラー | アプリケーション内部エラー |
+
+---
+
+### バリデーションエラー (422)
 
 フォームバリデーションに失敗した場合、エラーメッセージと共に元の画面にリダイレクトされます。
 
 Bladeテンプレートでは `$errors` 変数を通じてエラーメッセージにアクセスできます。
 
+**Ajax リクエスト時のレスポンス例:**
+
+```json
+{
+    "message": "The given data was invalid.",
+    "errors": {
+        "opponent_class_id": [
+            "相手クラスは必須です。"
+        ],
+        "result": [
+            "結果は必須です。"
+        ],
+        "game_mode_id": [
+            "ゲームモードは必須です。"
+        ]
+    }
+}
+```
+
+**よくあるバリデーションエラー:**
+
+| フィールド | エラーメッセージ | 原因 |
+|-----------|----------------|------|
+| `email` | "このメールアドレスは既に使用されています。" | 重複登録 |
+| `password` | "パスワードは8文字以上必要です。" | 文字数不足 |
+| `deck_id` | "選択されたデッキは無効です。" | 存在しないID |
+| `slug` | "このスラッグは既に使用されています。" | 共有リンクの重複 |
+
+---
+
 ### 認可エラー (403)
 
 他のユーザーのリソースにアクセスしようとした場合、403 Forbiddenが返されます。
+
+**レスポンス例:**
+
+```json
+{
+    "message": "This action is unauthorized."
+}
+```
+
+**発生するケース:**
+- 他のユーザーの対戦記録を編集/削除しようとした
+- 他のユーザーのデッキを編集/削除しようとした
+- 他のユーザーの共有リンクを操作しようとした
+
+---
 
 ### 認証エラー (401)
 
 未認証の状態で認証が必要なルートにアクセスした場合、`/login` へリダイレクトされます。
 
+**Ajax リクエスト時のレスポンス例:**
+
+```json
+{
+    "message": "Unauthenticated."
+}
+```
+
+---
+
 ### Not Found (404)
 
 存在しないリソースにアクセスした場合、404エラーページが表示されます。
+
+**Ajax リクエスト時のレスポンス例:**
+
+```json
+{
+    "message": "Record not found."
+}
+```
+
+---
+
+### CSRFトークンエラー (419)
+
+CSRFトークンが無効または期限切れの場合に発生します。
+
+**レスポンス例:**
+
+```json
+{
+    "message": "CSRF token mismatch."
+}
+```
+
+**対処法:**
+- ページをリロードして新しいCSRFトークンを取得
+- `@csrf` ディレクティブがフォームに含まれているか確認
+
+---
+
+### レート制限エラー (429)
+
+短時間に過剰なリクエストを送信した場合に発生します。
+
+**レスポンス例:**
+
+```json
+{
+    "message": "Too Many Attempts."
+}
+```
+
+**レスポンスヘッダー:**
+
+```
+Retry-After: 60
+X-RateLimit-Limit: 60
+X-RateLimit-Remaining: 0
+```
+
+---
+
+### サーバーエラー (500)
+
+アプリケーション内部でエラーが発生した場合に返されます。
+
+**本番環境のレスポンス例:**
+
+```json
+{
+    "message": "Server Error"
+}
+```
+
+**開発環境のレスポンス例（APP_DEBUG=true）:**
+
+```json
+{
+    "message": "SQLSTATE[42P01]: Undefined table...",
+    "exception": "Illuminate\\Database\\QueryException",
+    "file": "/var/www/html/app/Http/Controllers/BattleController.php",
+    "line": 45,
+    "trace": [...]
+}
+```
+
+---
+
+### エラーハンドリングのベストプラクティス
+
+**JavaScript でのエラーハンドリング例:**
+
+```javascript
+async function createBattle(data) {
+    try {
+        const response = await fetch('/battles', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify(data),
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+
+            switch (response.status) {
+                case 422:
+                    // バリデーションエラー
+                    displayValidationErrors(errorData.errors);
+                    break;
+                case 403:
+                    // 認可エラー
+                    alert('この操作を行う権限がありません。');
+                    break;
+                case 419:
+                    // CSRFトークンエラー
+                    window.location.reload();
+                    break;
+                case 429:
+                    // レート制限
+                    alert('リクエストが多すぎます。しばらく待ってから再試行してください。');
+                    break;
+                default:
+                    alert('エラーが発生しました。');
+            }
+            return;
+        }
+
+        // 成功時の処理
+        window.location.href = '/battles';
+
+    } catch (error) {
+        console.error('Network error:', error);
+        alert('通信エラーが発生しました。');
+    }
+}
+```
 
 ---
 
