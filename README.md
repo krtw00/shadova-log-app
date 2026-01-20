@@ -112,12 +112,12 @@ npm run dev                     # フロントエンド（Vite）
 
 | ドキュメント | 内容 |
 |-------------|------|
-| [システム概要](./docs/architecture/system-overview.md) | アーキテクチャ、技術スタック |
-| [データベース設計](./docs/architecture/db-schema.md) | テーブル定義、ER図 |
-| [API仕様](./docs/api/api-reference.md) | 全ルートの仕様 |
-| [機能設計](./docs/design/feature-design.md) | 各機能の詳細設計 |
-| [環境構築ガイド](./docs/guides/environment-setup.md) | 開発環境セットアップ |
-| [デプロイ手順](./docs/deployment/deployment.md) | Render/Supabase デプロイ |
+| [システム概要](./docs/02-architecture/system-overview.md) | アーキテクチャ、技術スタック |
+| [データベース設計](./docs/04-data/db-schema.md) | テーブル定義、ER図 |
+| [API仕様](./docs/06-interfaces/api-reference.md) | 全ルートの仕様 |
+| [機能設計](./docs/05-features/feature-design.md) | 各機能の詳細設計 |
+| [環境構築ガイド](./docs/08-deployment/environment-setup.md) | 開発環境セットアップ |
+| [デプロイ手順](./docs/08-deployment/deployment.md) | Render/Supabase デプロイ |
 
 ## プロジェクト構造
 

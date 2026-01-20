@@ -377,5 +377,5 @@ Render ダッシュボードの「Logs」タブから確認可能。
 
 ## 関連ドキュメント
 
-- [システム概要](../architecture/system-overview.md)
-- [環境セットアップ](../guides/environment-setup.md)
+- [システム概要](../02-architecture/system-overview.md)
+- [環境セットアップ](./environment-setup.md)

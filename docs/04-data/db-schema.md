@@ -44,35 +44,36 @@
 ┌──────────────────┤  ┌─────────────────────┐
 │  user_settings   │  │      battles        │
 ├──────────────────┤  ├─────────────────────┤
-│ user_id (PK,FK)  │  │ id (PK)             │
-│ theme            │  │ user_id (FK)        │──┘
-│ per_page         │  │ deck_id (FK)        │───────────────┐
-│ default_game_mode│  │ opponent_class (FK) │───────────────┤
-│ streamer_mode    │  │ my_class_id (FK)    │───────────────┤
-│ overlay_*        │  │ game_mode_id (FK)   │──┐            │
-└──────────────────┘  │ rank_id (FK)        │──┤            │
-                      │ group_id (FK)       │──┤            │
-       │              │ result              │  │            │
+│ id (PK)          │  │ id (PK)             │
+│ user_id (FK,UQ)  │  │ user_id (FK)        │──┘
+│ theme            │  │ deck_id (FK)        │───────────────┐
+│ per_page         │  │ opponent_class (FK) │───────────────┤
+│ default_game_mode│  │ my_class_id (FK)    │───────────────┤
+│ streamer_mode    │  │ game_mode_id (FK)   │──┐            │
+│ overlay_*        │  │ rank_id (FK)        │──┤            │
+└──────────────────┘  │ group_id (FK)       │──┤            │
+                      │ result              │  │            │
        │              │ is_first            │  │    ┌───────┴────────┐
-       ▼              │ played_at           │  │    │ leader_classes │
-┌──────────────────┐  │ notes               │  │    └────────────────┘
-│ streamer_sessions│  │ created_at          │  │
-├──────────────────┤  │ updated_at          │  │    ┌────────────────┐
-│ id (PK)          │  └─────────────────────┘  ├───►│   game_modes   │
-│ user_id (FK)     │──┘                        │    ├────────────────┤
-│ name             │       ┌───────────────────┤    │ id (PK)        │
-│ started_at       │       │                   │    │ code           │
-│ ended_at         │       │                   │    │ name           │
-│ is_active        │       ▼                   │    └────────────────┘
-│ streak_start     │  ┌────────────┐           │
-└──────────────────┘  │   ranks    │           │    ┌────────────────┐
-                      ├────────────┤           └───►│    groups      │
-       │              │ id (PK)    │                ├────────────────┤
-       ▼              │ name       │                │ id (PK)        │
-┌──────────────────┐  │ tier       │                │ name           │
-│   share_links    │  │ level      │                │ code           │
-├──────────────────┤  │ sort_order │                │ sort_order     │
-│ id (PK)          │  └────────────┘                └────────────────┘
+       │              │ played_at           │  │    │ leader_classes │
+       ▼              │ notes               │  │    └────────────────┘
+┌──────────────────┐  │ created_at          │  │
+│ streamer_sessions│  │ updated_at          │  │    ┌────────────────┐
+├──────────────────┤  └─────────────────────┘  ├───►│   game_modes   │
+│ id (PK)          │                           │    ├────────────────┤
+│ user_id (FK)     │──┘    ┌───────────────────┤    │ id (PK)        │
+│ name             │       │                   │    │ code           │
+│ started_at       │       │                   │    │ name           │
+│ ended_at         │       ▼                   │    └────────────────┘
+│ is_active        │  ┌────────────┐           │
+│ streak_start     │  │   ranks    │           │    ┌────────────────┐
+└──────────────────┘  ├────────────┤           └───►│    groups      │
+                      │ id (PK)    │                ├────────────────┤
+       │              │ name       │                │ id (PK)        │
+       ▼              │ tier       │                │ name           │
+┌──────────────────┐  │ level      │                │ code           │
+│   share_links    │  │ sort_order │                │ sort_order     │
+├──────────────────┤  └────────────┘                └────────────────┘
+│ id (PK)          │
 │ user_id (FK)     │──┘
 │ slug             │
 │ name             │
@@ -262,19 +263,23 @@
 
 | カラム名 | データ型 | 制約 | 説明 |
 |:---|:---|:---|:---|
-| `user_id` | `bigint` | **PK**, **FK (users.id)** | ユーザーID |
-| `theme` | `varchar(255)` | Default: 'dark' | テーマ（dark/light） |
-| `per_page` | `int` | Default: 20 | 一覧表示件数 |
+| `id` | `bigint` | **PK**, Auto Increment | 設定ID |
+| `user_id` | `bigint` | **FK (users.id)**, **Unique** | ユーザーID |
+| `theme` | `varchar(10)` | Default: 'dark' | テーマ（dark/light） |
+| `per_page` | `smallint` | Default: 20 | 一覧表示件数 |
 | `default_game_mode_id` | `smallint` | **FK (game_modes.id)**, Nullable | デフォルトゲームモード |
 | `streamer_mode_enabled` | `boolean` | Default: false | 配信者モード有効 |
-| `overlay_background_color` | `varchar(255)` | Default: '#1f2937' | オーバーレイ背景色 |
-| `overlay_text_color` | `varchar(255)` | Default: '#ffffff' | オーバーレイ文字色 |
-| `overlay_accent_color` | `varchar(255)` | Default: '#3b82f6' | オーバーレイアクセント色 |
-| `overlay_font_size` | `varchar(255)` | Default: 'medium' | オーバーレイフォントサイズ |
-| `overlay_opacity` | `int` | Default: 100 | オーバーレイ透明度 |
-| `overlay_show_streak` | `boolean` | Default: true | 連勝表示 |
+| `overlay_bg_transparent` | `boolean` | Default: true | オーバーレイ背景透過 |
+| `overlay_font_size` | `varchar(10)` | Default: 'medium' | フォントサイズ（small/medium/large/xlarge） |
+| `overlay_color_theme` | `varchar(20)` | Default: 'dark' | カラーテーマ（dark/light/custom） |
+| `overlay_custom_bg_color` | `varchar(20)` | Nullable | カスタム背景色（HEX） |
+| `overlay_custom_text_color` | `varchar(20)` | Nullable | カスタム文字色（HEX） |
 | `overlay_show_winrate` | `boolean` | Default: true | 勝率表示 |
 | `overlay_show_record` | `boolean` | Default: true | 戦績表示 |
+| `overlay_show_streak` | `boolean` | Default: true | 連勝表示 |
+| `overlay_show_deck` | `boolean` | Default: true | デッキ情報表示 |
+| `overlay_show_log` | `boolean` | Default: true | 対戦ログ表示 |
+| `overlay_log_count` | `int` | Default: 5 | 表示する対戦ログの件数 |
 | `created_at` | `timestamp` | Nullable | 作成日時 |
 | `updated_at` | `timestamp` | Nullable | 更新日時 |
 
@@ -376,7 +381,7 @@ public function battles() { return $this->hasMany(Battle::class); }
 
 // Battle.php
 public function user() { return $this->belongsTo(User::class); }
-public function deck() { return $this->belongsTo(Deck::class)->withTrashed(); }
+public function deck() { return $this->belongsTo(Deck::class); }
 public function opponentClass() { return $this->belongsTo(LeaderClass::class, 'opponent_class_id'); }
 public function myClass() { return $this->belongsTo(LeaderClass::class, 'my_class_id'); }
 public function gameMode() { return $this->belongsTo(GameMode::class); }
@@ -390,24 +395,24 @@ public function group() { return $this->belongsTo(Group::class); }
 
 | No | マイグレーション | 説明 |
 |----|-----------------|------|
-| 1 | `create_users_table` | ユーザーテーブル作成 |
-| 2 | `create_cache_table` | キャッシュテーブル作成 |
-| 3 | `create_jobs_table` | キューテーブル作成 |
-| 4 | `create_leader_classes_table` | クラスマスタ作成 |
-| 5 | `create_game_modes_table` | ゲームモードマスタ作成 |
-| 6 | `add_supabase_fields_to_users_table` | Supabase ID追加 |
-| 7 | `create_decks_table` | デッキテーブル作成 |
-| 8 | `create_battles_table` | 対戦記録テーブル作成 |
-| 9 | `modify_decks_for_soft_delete` | ソフトデリート対応 |
-| 10 | `add_username_to_users_table` | ユーザー名追加 |
-| 11 | `create_share_links_table` | 共有リンク作成 |
-| 12 | `create_ranks_table` | ランクマスタ作成 |
-| 13 | `add_rank_id_to_battles_table` | ランク紐付け追加 |
-| 14 | `add_my_class_id_to_battles_table` | 自クラス追加 |
-| 15 | `create_groups_table` | グループマスタ作成 |
-| 16 | `add_group_id_to_battles_table` | グループ紐付け追加 |
-| 17 | `create_user_settings_table` | ユーザー設定作成 |
-| 18 | `make_deck_id_nullable_in_battles_table` | deck_id nullable化 |
-| 19 | `add_streamer_mode_to_user_settings_table` | 配信者モード追加 |
-| 20 | `create_streamer_sessions_table` | 配信セッション作成 |
-| 21 | `add_oauth_fields_to_users_table` | OAuth認証フィールド追加（google_id, discord_id, avatar） |
+| 1 | `0001_01_01_000000_create_users_table` | ユーザーテーブル作成 |
+| 2 | `0001_01_01_000001_create_cache_table` | キャッシュテーブル作成 |
+| 3 | `0001_01_01_000002_create_jobs_table` | キューテーブル作成 |
+| 4 | `2026_01_11_000001_create_leader_classes_table` | クラスマスタ作成 |
+| 5 | `2026_01_11_000002_create_game_modes_table` | ゲームモードマスタ作成 |
+| 6 | `2026_01_11_000003_add_supabase_fields_to_users_table` | Supabase ID追加 |
+| 7 | `2026_01_11_000004_create_decks_table` | デッキテーブル作成 |
+| 8 | `2026_01_11_000005_create_battles_table` | 対戦記録テーブル作成 |
+| 9 | `2026_01_11_174220_modify_decks_for_soft_delete` | ソフトデリート対応 |
+| 10 | `2026_01_11_175428_add_username_to_users_table` | ユーザー名追加 |
+| 11 | `2026_01_11_175429_create_share_links_table` | 共有リンク作成 |
+| 12 | `2026_01_11_181045_create_ranks_table` | ランクマスタ作成 |
+| 13 | `2026_01_11_181046_add_rank_id_to_battles_table` | ランク紐付け追加 |
+| 14 | `2026_01_11_182227_add_my_class_id_to_battles_table` | 自クラス追加 |
+| 15 | `2026_01_11_182701_create_groups_table` | グループマスタ作成 |
+| 16 | `2026_01_11_182715_add_group_id_to_battles_table` | グループ紐付け追加 |
+| 17 | `2026_01_11_184132_create_user_settings_table` | ユーザー設定作成 |
+| 18 | `2026_01_11_195630_make_deck_id_nullable_in_battles_table` | deck_id nullable化 |
+| 19 | `2026_01_11_200804_add_streamer_mode_to_user_settings_table` | 配信者モード追加 |
+| 20 | `2026_01_11_200829_create_streamer_sessions_table` | 配信セッション作成 |
+| 21 | `2026_01_13_143109_add_oauth_fields_to_users_table` | OAuth認証フィールド追加（google_id, discord_id, avatar） |

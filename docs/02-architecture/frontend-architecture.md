@@ -8,7 +8,7 @@
 
 | 技術 | バージョン | 用途 |
 |------|-----------|------|
-| **Blade** | Laravel 11 | サーバーサイドテンプレート |
+| **Blade** | Laravel 12.x | サーバーサイドテンプレート |
 | **Alpine.js** | 3.15.x | リアクティブUI |
 | **Tailwind CSS** | 4.0 | スタイリング |
 | **Vite** | 7.0.x | ビルド・HMR |
@@ -414,5 +414,5 @@ npm run build
 ## 関連ドキュメント
 
 - [システム概要](./system-overview.md)
-- [API仕様](../api/api-reference.md)
-- [機能設計](../design/feature-design.md)
+- [API仕様](../06-interfaces/api-reference.md)
+- [機能設計](../05-features/feature-design.md)

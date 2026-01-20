@@ -558,20 +558,31 @@ OBS用オーバーレイウィンドウを表示します。
 
 ```json
 {
-  "wins": 10,
-  "losses": 5,
-  "winRate": 66.7,
-  "streak": 3,
-  "settings": {
-    "backgroundColor": "#1f2937",
-    "textColor": "#ffffff",
-    "accentColor": "#3b82f6",
-    "fontSize": "medium",
-    "opacity": 100,
-    "showStreak": true,
-    "showWinrate": true,
-    "showRecord": true
-  }
+  "session_name": "配信中",
+  "stats": {
+    "total": 15,
+    "wins": 10,
+    "losses": 5,
+    "win_rate": 66.7,
+    "streak": 3
+  },
+  "deck": {
+    "name": "エルフアグロ",
+    "class": "エルフ",
+    "total": 10,
+    "wins": 7,
+    "losses": 3,
+    "win_rate": 70.0
+  },
+  "log": [
+    {
+      "result": true,
+      "deck": "エルフアグロ",
+      "opponent": "ロイヤル",
+      "is_first": true,
+      "played_at": "5分前"
+    }
+  ]
 }
 ```
 
@@ -626,14 +637,91 @@ OBS用オーバーレイウィンドウを表示します。
 
 | パラメータ | 型 | 必須 | 説明 |
 |-----------|-----|------|------|
-| `overlay_background_color` | string | No | 背景色（HEX） |
-| `overlay_text_color` | string | No | 文字色（HEX） |
-| `overlay_accent_color` | string | No | アクセント色（HEX） |
-| `overlay_font_size` | string | No | フォントサイズ（small, medium, large） |
-| `overlay_opacity` | integer | No | 透明度（0-100） |
-| `overlay_show_streak` | boolean | No | 連勝表示 |
+| `overlay_bg_transparent` | boolean | No | 背景透過 |
+| `overlay_font_size` | string | No | フォントサイズ（small, medium, large, xlarge） |
+| `overlay_color_theme` | string | No | カラーテーマ（dark, light, custom） |
+| `overlay_custom_bg_color` | string | No | カスタム背景色（HEX） |
+| `overlay_custom_text_color` | string | No | カスタム文字色（HEX） |
 | `overlay_show_winrate` | boolean | No | 勝率表示 |
 | `overlay_show_record` | boolean | No | 戦績表示 |
+| `overlay_show_streak` | boolean | No | 連勝表示 |
+| `overlay_show_deck` | boolean | No | デッキ情報表示 |
+| `overlay_show_log` | boolean | No | 対戦ログ表示 |
+| `overlay_log_count` | integer | No | 表示する対戦ログの件数（1-20） |
+
+---
+
+## フィードバックルート
+
+### フィードバック画面表示
+
+**GET** `/feedback`
+
+フィードバック送信画面を表示します。
+
+**レスポンス:**
+- Bladeビュー（feedback/index）をレンダリング
+
+---
+
+### バグ報告送信
+
+**POST** `/feedback/bug`
+
+バグ報告をGitHub Issueとして送信します。
+
+**リクエストボディ (form-data):**
+
+| パラメータ | 型 | 必須 | 説明 |
+|-----------|-----|------|------|
+| `title` | string | Yes | タイトル（最大255文字） |
+| `description` | string | Yes | 説明（最大5000文字） |
+| `steps` | string | No | 再現手順（最大3000文字） |
+| `expected` | string | No | 期待する動作（最大1000文字） |
+| `actual` | string | No | 実際の動作（最大1000文字） |
+
+**レスポンス:**
+- 成功: `/feedback` へリダイレクトwithフラッシュメッセージ
+- 失敗: エラーメッセージと共に同画面へリダイレクト
+
+---
+
+### 機能要望送信
+
+**POST** `/feedback/enhancement`
+
+機能要望をGitHub Issueとして送信します。
+
+**リクエストボディ (form-data):**
+
+| パラメータ | 型 | 必須 | 説明 |
+|-----------|-----|------|------|
+| `title` | string | Yes | タイトル（最大255文字） |
+| `description` | string | Yes | 説明（最大5000文字） |
+| `use_case` | string | No | ユースケース（最大2000文字） |
+
+**レスポンス:**
+- 成功: `/feedback` へリダイレクトwithフラッシュメッセージ
+- 失敗: エラーメッセージと共に同画面へリダイレクト
+
+---
+
+### お問い合わせ送信
+
+**POST** `/feedback/contact`
+
+お問い合わせをGitHub Issueとして送信します。
+
+**リクエストボディ (form-data):**
+
+| パラメータ | 型 | 必須 | 説明 |
+|-----------|-----|------|------|
+| `subject` | string | Yes | 件名（最大255文字） |
+| `message` | string | Yes | メッセージ（最大5000文字） |
+
+**レスポンス:**
+- 成功: `/feedback` へリダイレクトwithフラッシュメッセージ
+- 失敗: エラーメッセージと共に同画面へリダイレクト
 
 ---
 
@@ -686,6 +774,6 @@ PUT/DELETEメソッドの場合は、`@method` ディレクティブも必要で
 
 ## 関連ドキュメント
 
-- [システム概要](../architecture/system-overview.md)
-- [データベーススキーマ](../architecture/db-schema.md)
-- [フロントエンドアーキテクチャ](../architecture/frontend-architecture.md)
+- [システム概要](../02-architecture/system-overview.md)
+- [データベーススキーマ](../04-data/db-schema.md)
+- [フロントエンドアーキテクチャ](../02-architecture/frontend-architecture.md)

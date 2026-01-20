@@ -100,7 +100,7 @@ shadova-log-app/
 ├── routes/
 │   └── web.php                             # Webルート定義
 ├── database/
-│   └── migrations/                         # 20個のマイグレーション
+│   └── migrations/                         # 21個のマイグレーション
 ├── resources/
 │   ├── views/                              # Bladeテンプレート
 │   │   ├── auth/                          # 認証画面
@@ -166,6 +166,7 @@ Laravel標準のセッションベース認証と、Laravel Socialiteを使用�
 | `StreamerController` | 配信セッション管理、オーバーレイAPI |
 | `ShareController` | 共有リンクのCRUD、有効/無効切替 |
 | `PublicProfileController` | 公開プロフィール表示 |
+| `FeedbackController` | バグ報告・機能要望・お問い合わせ（GitHub Issue連携） |
 
 ---
 
@@ -216,7 +217,7 @@ Laravel標準のセッションベース認証と、Laravel Socialiteを使用�
 
 ## 関連ドキュメント
 
-- [データベーススキーマ](./db-schema.md)
+- [データベーススキーマ](../04-data/db-schema.md)
 - [フロントエンドアーキテクチャ](./frontend-architecture.md)
-- [API仕様](../api/api-reference.md)
-- [機能設計](../design/feature-design.md)
+- [API仕様](../06-interfaces/api-reference.md)
+- [機能設計](../05-features/feature-design.md)
