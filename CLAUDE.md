@@ -18,30 +18,37 @@
 | Database | PostgreSQL | Supabase |
 | Deploy | Render | - |
 
-## 重要なコマンド
+## 開発環境（Docker）
 
 ```bash
-# 開発サーバー起動（推奨：全サービス同時起動）
-composer dev
+# 起動（Traefik起動後）
+cd ~/work/projects/shadova-log-app
+docker compose up -d
 
-# 個別起動
-php artisan serve --port=3000  # バックエンド
-npm run dev                     # フロントエンド（Vite）
+# アクセス
+http://shadova.localhost
 
-# データベース
-php artisan migrate            # マイグレーション実行
-php artisan migrate:fresh      # DBリセット＋マイグレーション
-php artisan db:seed            # シーダー実行
+# Artisanコマンド実行
+docker compose exec app php artisan migrate
+
+# ログ確認
+docker compose logs -f app
+```
+
+## コマンド（Docker内）
+
+```bash
+# マイグレーション
+docker compose exec app php artisan migrate
+
+# DBリセット
+docker compose exec app php artisan migrate:fresh --seed
 
 # テスト
-composer test                  # PHPUnit実行
-php artisan test               # テスト実行
+docker compose exec app php artisan test
 
-# ビルド
-npm run build                  # 本番ビルド
-
-# セットアップ（初回）
-composer setup
+# ビルド（本番）
+docker compose exec app npm run build
 ```
 
 ## プロジェクト構造

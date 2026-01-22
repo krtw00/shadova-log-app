@@ -1,0 +1,71 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: shadova-app
+    restart: unless-stopped
+    volumes:
+      - .:/var/www/html:cached
+      - vendor:/var/www/html/vendor
+      - node_modules:/var/www/html/node_modules
+    environment:
+      - APP_ENV=local
+      - APP_DEBUG=true
+      - APP_URL=http://shadova.localhost
+      - DB_CONNECTION=pgsql
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_DATABASE=shadova
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=postgres
+      - VITE_DEV_SERVER_URL=http://shadova.localhost:5173
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - traefik
+      - default
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.shadova.rule=Host(`shadova.localhost`)"
+      - "traefik.http.services.shadova.loadbalancer.server.port=80"
+      - "traefik.docker.network=traefik"
+
+  vite:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: shadova-vite
+    command: npm run dev -- --host 0.0.0.0
+    volumes:
+      - .:/var/www/html:cached
+      - node_modules:/var/www/html/node_modules
+    ports:
+      - "5173:5173"
+    depends_on:
+      - app
+
+  db:
+    image: postgres:16-alpine
+    container_name: shadova-db
+    environment:
+      POSTGRES_DB: shadova
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  vendor:
+  node_modules:
+  pgdata:
+
+networks:
+  traefik:
+    external: true

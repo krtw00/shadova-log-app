@@ -30,7 +30,49 @@
 | Auth | Laravel Socialite | 5.x |
 | Deploy | Render | - |
 
-## クイックスタート
+## クイックスタート（Docker）
+
+### 必要条件
+
+- Docker Desktop
+- Traefik起動済み（`~/work/infra/traefik`）
+
+### 起動
+
+```bash
+# Traefikネットワーク作成（初回のみ）
+docker network create traefik
+
+# Traefik起動
+cd ~/work/infra/traefik && docker compose up -d
+
+# プロジェクト起動
+cd ~/work/projects/shadova-log-app
+docker compose up -d
+```
+
+### アクセス
+
+- アプリ: http://shadova.localhost
+- Vite (HMR): http://localhost:5173
+
+### コマンド
+
+```bash
+# 起動
+docker compose up -d
+
+# ログ確認
+docker compose logs -f app
+
+# Artisanコマンド実行
+docker compose exec app php artisan migrate
+
+# 停止
+docker compose down
+```
+
+## ローカル開発（非推奨）
 
 ### 必要条件
 

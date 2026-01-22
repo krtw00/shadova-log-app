@@ -36,3 +36,4 @@ CLAUDE.local.md
 
 # Duplicate ui-mocks at root (use public/ui-mocks/)
 /ui-mocks/
+.mcp.json
