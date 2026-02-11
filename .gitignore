@@ -41,3 +41,4 @@ CLAUDE.local.md
 # AI
 CLAUDE.md
 .claude/
+docker-compose.override.yml

@@ -23,14 +23,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    networks:
-      - traefik
-      - default
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.shadova.rule=Host(`shadova.localhost`)"
-      - "traefik.http.services.shadova.loadbalancer.server.port=80"
-      - "traefik.docker.network=traefik"
+    ports:
+      - "8080:80"
 
   vite:
     build:
@@ -66,6 +60,3 @@ volumes:
   node_modules:
   pgdata:
 
-networks:
-  traefik:
-    external: true
