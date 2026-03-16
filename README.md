@@ -1,26 +1,28 @@
 # Shadova Log App
 
-シャドウバース ワールズビヨンドの戦績管理Webアプリケーション
+[日本語](README.ja.md) | English
 
-## 概要
+A battle record management web application for Shadowverse: Worlds Beyond.
 
-対戦ゲーム「シャドウバース ワールズビヨンド」のプレイヤー向け戦績管理ツールです。デッキ管理、対戦記録、統計分析、配信者向けオーバーレイ機能を提供します。
+## Overview
 
-## 主な機能
+A battle record management tool for players of the competitive card game "Shadowverse: Worlds Beyond." It provides deck management, match recording, statistical analysis, and streamer overlay features.
 
-| 機能 | 説明 |
-|------|------|
-| 対戦記録管理 | 勝敗、使用デッキ、相手クラスを記録 |
-| 全対戦形式対応 | ランクマッチ、グランプリ、ルームマッチ、2Pick等 |
-| 統計分析 | 勝率、クラス別分析、相性表 |
-| 配信者モード | OBSオーバーレイ、セッション管理 |
-| 共有機能 | 公開プロフィール |
-| OAuth認証 | Google/Discord でのログイン |
+## Features
 
-## 技術スタック
+| Feature | Description |
+|---------|-------------|
+| Match Recording | Record wins/losses, decks used, and opponent classes |
+| All Match Formats | Ranked, Grand Prix, Room Match, 2Pick, etc. |
+| Statistical Analysis | Win rate, class-based analysis, matchup charts |
+| Streamer Mode | OBS overlay, session management |
+| Sharing | Public profiles |
+| OAuth Authentication | Login via Google/Discord |
 
-| レイヤー | 技術 | バージョン |
-|---------|------|-----------|
+## Tech Stack
+
+| Layer | Technology | Version |
+|-------|-----------|---------|
 | Backend | Laravel | 12.x |
 | PHP | PHP | 8.2+ |
 | Frontend | Alpine.js + Blade | 3.x |
@@ -30,68 +32,68 @@
 | Auth | Laravel Socialite | 5.x |
 | Deploy | Render | - |
 
-## クイックスタート（Docker）
+## Quick Start (Docker)
 
-### 必要条件
+### Prerequisites
 
 - Docker Desktop
-- Traefik起動済み（`~/work/infra/traefik`）
+- Traefik running (`~/work/infra/traefik`)
 
-### 起動
+### Launch
 
 ```bash
-# Traefikネットワーク作成（初回のみ）
+# Create Traefik network (first time only)
 docker network create traefik
 
-# Traefik起動
+# Start Traefik
 cd ~/work/infra/traefik && docker compose up -d
 
-# プロジェクト起動
+# Start the project
 cd ~/work/projects/shadova-log-app
 docker compose up -d
 ```
 
-### アクセス
+### Access
 
-- アプリ: http://shadova.localhost
+- App: http://shadova.localhost
 - Vite (HMR): http://localhost:5173
 
-### コマンド
+### Commands
 
 ```bash
-# 起動
+# Start
 docker compose up -d
 
-# ログ確認
+# View logs
 docker compose logs -f app
 
-# Artisanコマンド実行
+# Run Artisan commands
 docker compose exec app php artisan migrate
 
-# 停止
+# Stop
 docker compose down
 ```
 
-## ローカル開発（非推奨）
+## Local Development (Not Recommended)
 
-### 必要条件
+### Prerequisites
 
 - PHP 8.2+
 - Composer 2.x
 - Node.js 20+
-- PostgreSQL（または Supabase）
+- PostgreSQL (or Supabase)
 
-### セットアップ
+### Setup
 
 ```bash
-# リポジトリをクローン
+# Clone the repository
 git clone <repository-url>
 cd shadova-log-app
 
-# セットアップ（依存関係インストール、キー生成、マイグレーション、ビルド）
+# Setup (install dependencies, generate key, migrate, build)
 composer setup
 
-# または個別に実行
+# Or run individually
 composer install
 cp .env.example .env
 php artisan key:generate
@@ -100,12 +102,12 @@ npm install
 npm run build
 ```
 
-### 環境変数
+### Environment Variables
 
-`.env` ファイルに以下を設定してください：
+Set the following in the `.env` file:
 
 ```bash
-# データベース（Supabase）
+# Database (Supabase)
 DB_CONNECTION=pgsql
 DB_HOST=db.xxxxx.supabase.co
 DB_PORT=5432
@@ -113,10 +115,10 @@ DB_DATABASE=postgres
 DB_USERNAME=postgres
 DB_PASSWORD=xxxxx
 
-# アプリケーション
+# Application
 APP_URL=http://localhost:3000
 
-# OAuth（オプション）
+# OAuth (optional)
 GOOGLE_CLIENT_ID=xxxxx
 GOOGLE_CLIENT_SECRET=xxxxx
 GOOGLE_REDIRECT_URI=${APP_URL}/auth/google/callback
@@ -126,69 +128,69 @@ DISCORD_CLIENT_SECRET=xxxxx
 DISCORD_REDIRECT_URI=${APP_URL}/auth/discord/callback
 ```
 
-### 開発サーバー起動
+### Start Development Server
 
 ```bash
-# 全サービス同時起動（推奨）
+# Start all services simultaneously (recommended)
 composer dev
 
-# または個別起動
-php artisan serve --port=3000  # バックエンド
-npm run dev                     # フロントエンド（Vite）
+# Or start individually
+php artisan serve --port=3000  # Backend
+npm run dev                     # Frontend (Vite)
 ```
 
-## コマンド一覧
+## Command Reference
 
-| コマンド | 説明 |
-|---------|------|
-| `composer dev` | 開発サーバー起動（全サービス同時） |
-| `composer test` | PHPUnit テスト実行 |
-| `composer setup` | 初期セットアップ |
-| `php artisan migrate` | マイグレーション実行 |
-| `php artisan migrate:fresh --seed` | DBリセット＋シード |
-| `npm run build` | 本番ビルド |
+| Command | Description |
+|---------|-------------|
+| `composer dev` | Start development server (all services) |
+| `composer test` | Run PHPUnit tests |
+| `composer setup` | Initial setup |
+| `php artisan migrate` | Run migrations |
+| `php artisan migrate:fresh --seed` | Reset DB + seed |
+| `npm run build` | Production build |
 
-## ドキュメント
+## Documentation
 
-詳細なドキュメントは [docs/](./docs/) を参照してください。
+See [docs/](./docs/) for detailed documentation.
 
-| ドキュメント | 内容 |
-|-------------|------|
-| [システム概要](./docs/02-architecture/system-overview.md) | アーキテクチャ、技術スタック |
-| [データベース設計](./docs/04-data/db-schema.md) | テーブル定義、ER図 |
-| [API仕様](./docs/06-interfaces/api-reference.md) | 全ルートの仕様 |
-| [機能設計](./docs/05-features/feature-design.md) | 各機能の詳細設計 |
-| [環境構築ガイド](./docs/08-deployment/environment-setup.md) | 開発環境セットアップ |
-| [デプロイ手順](./docs/08-deployment/deployment.md) | Render/Supabase デプロイ |
+| Document | Contents |
+|----------|----------|
+| [System Overview](./docs/02-architecture/system-overview.md) | Architecture, tech stack |
+| [Database Design](./docs/04-data/db-schema.md) | Table definitions, ER diagrams |
+| [API Reference](./docs/06-interfaces/api-reference.md) | All route specifications |
+| [Feature Design](./docs/05-features/feature-design.md) | Detailed feature design |
+| [Environment Setup](./docs/08-deployment/environment-setup.md) | Development environment setup |
+| [Deployment Guide](./docs/08-deployment/deployment.md) | Render/Supabase deployment |
 
-## プロジェクト構造
+## Project Structure
 
 ```
 shadova-log-app/
 ├── app/
-│   ├── Http/Controllers/     # コントローラー
-│   ├── Models/              # Eloquentモデル
-│   ├── Policies/            # 認可ポリシー
-│   └── Notifications/       # 通知クラス
+│   ├── Http/Controllers/     # Controllers
+│   ├── Models/              # Eloquent models
+│   ├── Policies/            # Authorization policies
+│   └── Notifications/       # Notification classes
 ├── resources/
-│   ├── views/               # Bladeテンプレート
-│   └── js/                  # JavaScript（Alpine.js）
+│   ├── views/               # Blade templates
+│   └── js/                  # JavaScript (Alpine.js)
 ├── database/
-│   ├── migrations/          # DBマイグレーション
-│   ├── factories/           # モデルファクトリ
-│   └── seeders/             # シーダー
+│   ├── migrations/          # DB migrations
+│   ├── factories/           # Model factories
+│   └── seeders/             # Seeders
 ├── routes/
-│   └── web.php              # Webルート定義
-├── docs/                    # ドキュメント
-└── tests/                   # PHPUnitテスト
+│   └── web.php              # Web route definitions
+├── docs/                    # Documentation
+└── tests/                   # PHPUnit tests
 ```
 
-## デプロイ
+## Deployment
 
-- **プラットフォーム**: Render
-- **ブランチ**: main
-- **自動デプロイ**: 有効
+- **Platform**: Render
+- **Branch**: main
+- **Auto Deploy**: Enabled
 
-## ライセンス
+## License
 
 MIT License
