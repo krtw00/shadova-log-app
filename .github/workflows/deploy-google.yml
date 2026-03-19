@@ -1,0 +1,47 @@
+name: Deploy to Cloud Run
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: shadova-deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      GOOGLE_CLOUD_PROJECT: ${{ vars.GOOGLE_CLOUD_PROJECT || 'oauthsetting-484201' }}
+      GOOGLE_CLOUD_REGION: ${{ vars.GOOGLE_CLOUD_REGION || 'asia-northeast1' }}
+      ARTIFACT_REGISTRY_REPOSITORY: ${{ vars.ARTIFACT_REGISTRY_REPOSITORY || 'apps' }}
+      CLOUD_RUN_SERVICE: ${{ vars.CLOUD_RUN_SERVICE || 'shadova-log' }}
+      RUNTIME_ENV_FILE: deploy/google/shadova.runtime.env
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Write runtime env
+        run: |
+          cat <<'EOF' > "$RUNTIME_ENV_FILE"
+          ${{ secrets.SHADOVA_RUNTIME_ENV }}
+          EOF
+
+      - id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
+          create_credentials_file: true
+
+      - uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.GOOGLE_CLOUD_PROJECT }}
+
+      - name: Deploy to Cloud Run
+        run: bash scripts/deploy-cloudrun-shadova.sh
