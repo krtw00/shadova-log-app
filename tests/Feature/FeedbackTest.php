@@ -33,36 +33,57 @@ class FeedbackTest extends TestCase
     public function test_bug_report_validation(): void
     {
         $user = User::factory()->create();
+        $token = 'test-token';
 
-        $response = $this->actingAs($user)->post('/feedback/bug', [
-            'title' => '',
-            'description' => '',
-        ]);
+        $response = $this->withSession(['_token' => $token])
+            ->actingAs($user)
+            ->postJson('/feedback/bug', [
+                '_token' => $token,
+                'title' => '',
+                'description' => '',
+            ], [
+                'X-CSRF-TOKEN' => $token,
+            ]);
 
-        $response->assertSessionHasErrors(['title', 'description']);
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['title', 'description']);
     }
 
     public function test_enhancement_request_validation(): void
     {
         $user = User::factory()->create();
+        $token = 'test-token';
 
-        $response = $this->actingAs($user)->post('/feedback/enhancement', [
-            'title' => '',
-            'description' => '',
-        ]);
+        $response = $this->withSession(['_token' => $token])
+            ->actingAs($user)
+            ->postJson('/feedback/enhancement', [
+                '_token' => $token,
+                'title' => '',
+                'description' => '',
+            ], [
+                'X-CSRF-TOKEN' => $token,
+            ]);
 
-        $response->assertSessionHasErrors(['title', 'description']);
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['title', 'description']);
     }
 
     public function test_contact_form_validation(): void
     {
         $user = User::factory()->create();
+        $token = 'test-token';
 
-        $response = $this->actingAs($user)->post('/feedback/contact', [
-            'subject' => '',
-            'message' => '',
-        ]);
+        $response = $this->withSession(['_token' => $token])
+            ->actingAs($user)
+            ->postJson('/feedback/contact', [
+                '_token' => $token,
+                'subject' => '',
+                'message' => '',
+            ], [
+                'X-CSRF-TOKEN' => $token,
+            ]);
 
-        $response->assertSessionHasErrors(['subject', 'message']);
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['subject', 'message']);
     }
 }

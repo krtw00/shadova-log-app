@@ -1,5 +1,7 @@
 # Shadova Log App
 
+> Archived on April 3, 2026. The service is scheduled for shutdown because there are no active users. This repository is kept for reference only.
+
 [日本語](README.ja.md) | English
 
 A battle record management web application for Shadowverse: Worlds Beyond.
@@ -30,24 +32,17 @@ A battle record management tool for players of the competitive card game "Shadow
 | Build | Vite | 7.x |
 | Database | PostgreSQL | Supabase |
 | Auth | Laravel Socialite | 5.x |
-| Deploy | Render | - |
+| Deploy | Cloud Run + GitHub Actions | GCP |
 
 ## Quick Start (Docker)
 
 ### Prerequisites
 
 - Docker Desktop
-- Traefik running (`~/work/infra/traefik`)
 
 ### Launch
 
 ```bash
-# Create Traefik network (first time only)
-docker network create traefik
-
-# Start Traefik
-cd ~/work/infra/traefik && docker compose up -d
-
 # Start the project
 cd ~/work/projects/shadova-log-app
 docker compose up -d
@@ -128,6 +123,8 @@ DISCORD_CLIENT_SECRET=xxxxx
 DISCORD_REDIRECT_URI=${APP_URL}/auth/discord/callback
 ```
 
+For production on Cloud Run, use `deploy/google/shadova.runtime.env.example` as the base runtime env file.
+
 ### Start Development Server
 
 ```bash
@@ -161,7 +158,7 @@ See [docs/](./docs/) for detailed documentation.
 | [API Reference](./docs/06-interfaces/api-reference.md) | All route specifications |
 | [Feature Design](./docs/05-features/feature-design.md) | Detailed feature design |
 | [Environment Setup](./docs/08-deployment/environment-setup.md) | Development environment setup |
-| [Deployment Guide](./docs/08-deployment/deployment.md) | Render/Supabase deployment |
+| [Deployment Guide](./docs/08-deployment/deployment.md) | Cloud Run / Supabase deployment |
 
 ## Project Structure
 
@@ -187,9 +184,9 @@ shadova-log-app/
 
 ## Deployment
 
-- **Platform**: Render
-- **Branch**: main
-- **Auto Deploy**: Enabled
+- **Platform**: Google Cloud Run
+- **Branch**: `main`
+- **CI/CD**: GitHub Actions (`.github/workflows/deploy-google.yml`)
 
 ## License
 

@@ -1,5 +1,7 @@
 # Shadova Log App
 
+> 2026年4月3日付でアーカイブ化。アクティブユーザー不在のためサービス終了予定です。このリポジトリは参照用として保持します。
+
 日本語 | [English](README.md)
 
 シャドウバース ワールズビヨンドの戦績管理Webアプリケーション
@@ -30,24 +32,17 @@
 | Build | Vite | 7.x |
 | Database | PostgreSQL | Supabase |
 | Auth | Laravel Socialite | 5.x |
-| Deploy | Render | - |
+| Deploy | Cloud Run + GitHub Actions | GCP |
 
 ## クイックスタート（Docker）
 
 ### 必要条件
 
 - Docker Desktop
-- Traefik起動済み（`~/work/infra/traefik`）
 
 ### 起動
 
 ```bash
-# Traefikネットワーク作成（初回のみ）
-docker network create traefik
-
-# Traefik起動
-cd ~/work/infra/traefik && docker compose up -d
-
 # プロジェクト起動
 cd ~/work/projects/shadova-log-app
 docker compose up -d
@@ -128,6 +123,8 @@ DISCORD_CLIENT_SECRET=xxxxx
 DISCORD_REDIRECT_URI=${APP_URL}/auth/discord/callback
 ```
 
+本番用のランタイム環境変数は `deploy/google/shadova.runtime.env.example` をベースに作成します。
+
 ### 開発サーバー起動
 
 ```bash
@@ -161,7 +158,7 @@ npm run dev                     # フロントエンド（Vite）
 | [API仕様](./docs/06-interfaces/api-reference.md) | 全ルートの仕様 |
 | [機能設計](./docs/05-features/feature-design.md) | 各機能の詳細設計 |
 | [環境構築ガイド](./docs/08-deployment/environment-setup.md) | 開発環境セットアップ |
-| [デプロイ手順](./docs/08-deployment/deployment.md) | Render/Supabase デプロイ |
+| [デプロイ手順](./docs/08-deployment/deployment.md) | Cloud Run / Supabase デプロイ |
 
 ## プロジェクト構造
 
@@ -187,9 +184,9 @@ shadova-log-app/
 
 ## デプロイ
 
-- **プラットフォーム**: Render
-- **ブランチ**: main
-- **自動デプロイ**: 有効
+- **プラットフォーム**: Google Cloud Run
+- **ブランチ**: `main`
+- **CI/CD**: GitHub Actions（`.github/workflows/deploy-google.yml`）
 
 ## ライセンス
 

@@ -27,7 +27,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // 本番環境でHTTPSを強制（Renderのリバースプロキシ対応）
+        // 本番環境でHTTPSを強制（Cloud Run / リバースプロキシ配下対応）
         if (app()->environment('production')) {
             URL::forceScheme('https');
         }
